@@ -1,0 +1,329 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayVibes</title>
+    
+    <!-- PWA Manifest Link (Added Here) -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        /* Header Section */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-container img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #d63031;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .btn-web {
+            background-color: transparent;
+            color: #d63031;
+            border: 2px solid #d63031;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .btn-web:hover {
+            background-color: #d63031;
+            color: white;
+        }
+        .btn-download-header {
+            background-color: #d63031;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .btn-download-header:hover {
+            background-color: #c0392b;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #d63031 0%, #ff7675 100%);
+            color: white;
+        }
+        .hero-logo-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .hero-logo-box img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+        .hero h1 {
+            font-size: 42px;
+            font-weight: 700;
+        }
+        .hero p {
+            font-size: 18px;
+            max-width: 650px;
+            margin-bottom: 30px;
+            opacity: 0.95;
+        }
+        .download-btn {
+            background-color: #fff;
+            color: #d63031;
+            padding: 15px 35px;
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            display: inline-block;
+        }
+        .download-btn:hover {
+            transform: translateY(-3px);
+            background-color: #f1f2f6;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 80px 8%;
+            background: #fff;
+            text-align: center;
+        }
+        .features-section h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #2d3436;
+        }
+        .features-section .subtitle {
+            color: #636e72;
+            margin-bottom: 50px;
+            font-size: 16px;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            text-align: left;
+        }
+        .feature-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            border-left: 4px solid #d63031;
+            transition: transform 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .feature-icon {
+            font-size: 28px;
+            color: #d63031;
+            margin-bottom: 15px;
+        }
+        .feature-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #2d3436;
+        }
+        .feature-card p {
+            font-size: 14px;
+            color: #636e72;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 25px;
+            background: #2d3436;
+            color: #fff;
+            font-size: 14px;
+        }
+        .footer-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .footer-logo img {
+            width: 25px;
+            height: 25px;
+            object-fit: contain;
+        }
+
+        @media(max-width: 768px) {
+            header { padding: 15px 5px; }
+            .nav-buttons { gap: 8px; }
+            .btn-web, .btn-download-header { padding: 8px 12px; font-size: 12px; }
+            .hero h1 { font-size: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+            <span class="logo-text">PayVibes</span>
+        </div>
+        <div class="nav-buttons">
+          <a href="app.html" class="btn-web">Continue to Web App</a>
+            <a href="/downloads/payvibes.online" download="PayVibes.exe" class="btn-download-header">Download The App Now</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+            <h1>PayVibes</h1>
+        </div>
+        <p>All your business billing, inventory, and management—now in one place. Fast, secure, and easy!</p>
+        <a href="/downloads/payvibes-setup.exe" download="PayVibes.exe" class="download-btn">
+            <i class="fa-solid fa-download"></i> Download PayVibes App Now
+        </a>
+    </section>
+
+    <!-- Features / App Details Section -->
+    <section class="features-section">
+        <h2>Explore App Features</h2>
+        <p class="subtitle">The powerful tools and navigation options within your app.</p>
+        
+        <div class="features-grid">
+            <!-- 1. Sales Invoice -->
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                <h3>Sales Invoice</h3>
+                <p>Generate fast and professional sales bills for your customers.</p>
+            </div>
+
+            <!-- 2. Purchase Invoice -->
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-file-invoice"></i></div>
+                <h3>Purchase Invoice</h3>
+                <p>Maintain a complete record of purchases made from suppliers and the associated bills.</p>
+            </div>
+
+            <!-- 3. Daily Reports -->
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <h3>Daily Reports</h3>
+                <p>Review daily sales, profit, and business performance.</p>
+            </div>
+
+            <!-- 4. Quotations -->
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-file-lines"></i></div>
+                <h3>Quotations</h3>
+                <p>Easily prepare price estimates and quotations for customers.</p>
+            </div>
+
+            <!-- 5. Patient Records -->
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-user-injured"></i></div>
+                <h3>Patient Records</h3>
+                <p>Maintain patient data and history for the clinic or medical store.</p>
+            </div>
+
+            <!-- 6. Debit Notes & Returns -->
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-rotate-left"></i></div>
+                <h3>Debit Notes & Returns</h3>
+                <p>Easily track and adjust item returns and debit notes.</p>
+            </div>
+
+            <!-- 7. Inventory & Stock -->
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+                <h3>Inventory & Stock</h3>
+                <p>Manage your stock availability, item quantities, and alerts.</p>
+            </div>
+
+            <!-- 8. Customers / Shops -->
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-store"></i></div>
+                <h3>Customers / Shops</h3>
+                <p>Check the ledger details and balances for all your clients and shops.</p>
+            </div>
+
+            <!-- 9. Suppliers -->
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-truck-field"></i></div>
+                <h3>Suppliers</h3>
+                <p>Maintain payment histories and details for your vendors and suppliers.</p>
+            </div>
+
+            <!-- 10. Purchase Orders -->
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+                <h3>Purchase Orders</h3>
+                <p>Request the orders placed with suppliers for stock.</p>
+            </div>
+
+            <!-- 11. Payment Out -->
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                <h3>Payment Out</h3>
+                <p>Track cash or bank payments made to suppliers and for expenses.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+    
+            <span style="font-weight: bold; color: white;">PayVibes</span>
+        </div>
+        <p>&copy; 2026 PayVibes. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
