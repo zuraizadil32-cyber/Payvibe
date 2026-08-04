@@ -1,6 +1,7 @@
 {
   "name": "PayVibes",
   "short_name": "PayVibes",
+  "description": "All your business billing, inventory, and management—now in one place. Fast, secure, and easy!",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
