@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PayVibes - Business & Billing Management App</title>
+    <title>PayVibes</title>
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#d63031">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome for Icons -->
@@ -220,7 +223,7 @@
         </div>
         <div class="nav-buttons">
             <a href="https://payvibes.online" target="_blank" class="btn-web">Continue to Web App</a>
-            <button onclick="downloadApp()" class="btn-download-header">Download</button>
+            <button onclick="installApp()" class="btn-download-header">Download</button>
         </div>
     </header>
 
@@ -231,7 +234,7 @@
             <h1>PayVibes</h1>
         </div>
         <p>All your business billing, inventory, and management—now in one place. Fast, secure, and easy!</p>
-        <button onclick="downloadApp()" class="download-btn">
+        <button onclick="installApp()" class="download-btn">
             <i class="fa-solid fa-download"></i> Download PayVibes App
         </button>
     </section>
@@ -242,56 +245,77 @@
         <p class="subtitle">The powerful tools and navigation options within your app.</p>
         
         <div class="features-grid">
+            <!-- 1. Sales Invoice -->
             <div class="feature-card">
                 <div class="feature-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
                 <h3>Sales Invoice</h3>
                 <p>Generate fast and professional sales bills for your customers.</p>
             </div>
+
+            <!-- 2. Purchase Invoice -->
             <div class="feature-card">
                 <div class="feature-icon"><i class="fa-solid fa-file-invoice"></i></div>
                 <h3>Purchase Invoice</h3>
                 <p>Maintain a complete record of purchases made from suppliers and the associated bills.</p>
             </div>
+
+            <!-- 3. Daily Reports -->
             <div class="feature-card">
                 <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
                 <h3>Daily Reports</h3>
                 <p>Review daily sales, profit, and business performance.</p>
             </div>
+
+            <!-- 4. Quotations -->
             <div class="feature-card">
                 <div class="feature-icon"><i class="fa-solid fa-file-lines"></i></div>
                 <h3>Quotations</h3>
                 <p>Easily prepare price estimates and quotations for customers.</p>
             </div>
+
+            <!-- 5. Patient Records -->
             <div class="feature-card">
                 <div class="feature-icon"><i class="fa-solid fa-user-injured"></i></div>
                 <h3>Patient Records</h3>
                 <p>Maintain patient data and history for the clinic or medical store.</p>
             </div>
+
+            <!-- 6. Debit Notes & Returns -->
             <div class="feature-card">
                 <div class="feature-icon"><i class="fa-solid fa-rotate-left"></i></div>
                 <h3>Debit Notes & Returns</h3>
                 <p>Easily track and adjust item returns and debit notes.</p>
             </div>
+
+            <!-- 7. Inventory & Stock -->
             <div class="feature-card">
                 <div class="feature-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
                 <h3>Inventory & Stock</h3>
                 <p>Manage your stock availability, item quantities, and alerts.</p>
             </div>
+
+            <!-- 8. Customers / Shops -->
             <div class="feature-card">
                 <div class="feature-icon"><i class="fa-solid fa-store"></i></div>
                 <h3>Customers / Shops</h3>
                 <p>Check the ledger details and balances for all your clients and shops.</p>
             </div>
+
+            <!-- 9. Suppliers -->
             <div class="feature-card">
                 <div class="feature-icon"><i class="fa-solid fa-truck-field"></i></div>
                 <h3>Suppliers</h3>
                 <p>Maintain payment histories and details for your vendors and suppliers.</p>
             </div>
+
+            <!-- 10. Purchase Orders -->
             <div class="feature-card">
                 <div class="feature-icon"><i class="fa-solid fa-clipboard-list"></i></div>
                 <h3>Purchase Orders</h3>
                 <p>Request the orders placed with suppliers for stock.</p>
             </div>
+
+            <!-- 11. Payment Out -->
             <div class="feature-card">
                 <div class="feature-icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
                 <h3>Payment Out</h3>
@@ -309,34 +333,26 @@
         <p>&copy; 2026 PayVibes. All rights reserved.</p>
     </footer>
 
-    <!-- JavaScript to Handle Safe Download & Errors -->
+    <!-- PWA Install Script -->
     <script>
-        function downloadApp() {
-            // Yahan apni setup file ka relative path dein (e.g., downloads/payvibes-setup.exe)
-            // Ya agar aapne file GitHub par 'downloads' folder mein rakhi hai toh uska path yeh hoga:
-            const fileUrl = "downloads/payvibes-setup.exe";
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
 
-            // Pehle check karein ke file exist karti hai ya nahi taaki 404 error na aaye
-            fetch(fileUrl, { method: 'HEAD' })
-                .then(response => {
-                    if (response.ok) {
-                        // Agar file mil gayi toh download start kar dein
-                        const a = document.createElement('a');
-                        a.href = fileUrl;
-                        a.download = 'PayVibes.exe';
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                    } else {
-                        // Agar file nahi mili toh user ko friendly message dein aur web app par bhej dein
-                        alert("App setup file is currently updating or not found. Redirecting you to the Web App!");
-                        window.open("https://payvibes.online", "_blank");
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
                     }
-                })
-                .catch(() => {
-                    // Network issue ya error ki surat mein fallback
-                    window.location.href = "https://payvibes.online";
+                    deferredPrompt = null;
                 });
+            } else {
+                window.open("https://payvibes.online", "_blank");
+            }
         }
     </script>
 </body>
