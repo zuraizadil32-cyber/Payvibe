@@ -1,0 +1,20 @@
+{
+  "name": "PayVibes",
+  "short_name": "PayVibes",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#d63031",
+  "icons": [
+    {
+      "src": "download__1_-removebg-preview.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "download__1_-removebg-preview.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
