@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoicevibes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-slate-100 font-sans antialiased text-slate-800">
+
+  <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-8 border border-slate-200">
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-orange-500 text-white rounded-full text-2xl font-bold mb-3 shadow-lg">
+          <i class="fa-solid fa-pills"></i>
+        </div>
+        <h1 class="text-2xl font-extrabold text-slate-900">Invoicevibes</h1>
+        <p class="text-xs text-slate-500 mt-1">Sign in with your authorized system credentials</p>
+      </div>
+
+      <form onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Email Address</label>
+          <input type="email" id="loginEmail" required placeholder="Email" class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Password</label>
+          <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div id="loginError" class="hidden text-xs text-rose-600 font-semibold text-center bg-rose-50 p-2 rounded">
+          Invalid email or password. Please try again.
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg shadow transition text-sm">
+          Sign In to Dashboard
+        </button>
+      </form>
+      <div class="mt-6 pt-4 border-t border-slate-100 text-center text-[11px] text-slate-400">
+        Secure Invoicematic & Inventory Management Solution
+      </div>
+    </div>
+  </div>
+
+  <div id="appContainer" class="hidden flex h-screen overflow-hidden">
+
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shadow-xl z-20">
+      <div class="p-4 border-b border-slate-800 flex items-center space-x-3">
+        <div class="w-10 h-10 bg-orange-500 text-white rounded-lg flex items-center justify-center font-bold text-lg shadow">
+          <i class="fa-solid fa-pills"></i>
+        </div>
+        <div>
+          <h2 class="font-extrabold text-white text-sm">Invoicevibes</h2>
+          <span class="text-[10px] text-orange-400 font-bold uppercase tracking-wider" id="userRoleDisplay">Admin</span>
+        </div>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto p-3 space-y-1 text-xs font-semibold">
+        <button onclick="showTab('dashboard')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition group">
+          <i class="fa-solid fa-chart-pie w-5 text-orange-500"></i><span>Dashboard</span>
+        </button>
+        <button onclick="showTab('orders')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition group">
+          <i class="fa-solid fa-file-invoice-dollar w-5 text-orange-500"></i><span>Sales Invoices</span>
+        </button>
+        <button onclick="showTab('purchaseinvoices')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition group">
+          <i class="fa-solid fa-file-invoice w-5 text-emerald-400"></i><span>Purchase Invoices</span>
+        </button>
+        <button onclick="showTab('dailyreports')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition group">
+          <i class="fa-solid fa-chart-line w-5 text-cyan-400"></i><span>Daily Reports</span>
+        </button>
+        <button onclick="showTab('quotations')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition group">
+          <i class="fa-solid fa-file-lines w-5 text-orange-500"></i><span>Quotations</span>
+        </button>
+        <button onclick="showTab('patients')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition group">
+          <i class="fa-solid fa-hospital-user w-5 text-orange-500"></i><span>Patient Records</span>
+        </button>
+        <button onclick="showTab('debitnotes')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition group">
+          <i class="fa-solid fa-rotate-left w-5 text-orange-500"></i><span>Debit Notes & Returns</span>
+        </button>
+        <button onclick="showTab('inventory')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition group">
+          <i class="fa-solid fa-boxes-stacked w-5 text-orange-500"></i><span>Inventory Stock</span>
+        </button>
+        <button onclick="showTab('customers')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition group">
+          <i class="fa-solid fa-store w-5 text-orange-500"></i><span>Customer / Shops</span>
+        </button>
+        <button onclick="showTab('suppliers')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition group">
+          <i class="fa-solid fa-truck-field w-5 text-orange-500"></i><span>Suppliers Directory</span>
+        </button>
+        <button onclick="showTab('purchases')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition group">
+          <i class="fa-solid fa-cart-shopping w-5 text-orange-500"></i><span>Purchase Orders</span>
+        </button>
+        <button onclick="showTab('payouts')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition group">
+          <i class="fa-solid fa-money-bill-transfer w-5 text-orange-500"></i><span>Payment Out Vouchers</span>
+        </button>
+      </nav>
+
+      <div class="p-3 border-t border-slate-800">
+        <button onclick="logout()" class="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-bold transition text-xs">
+          <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden bg-slate-100">
+
+      <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-sm z-10">
+        <h3 id="currentTabTitle" class="text-base font-extrabold text-slate-800">Dashboard Overview</h3>
+        <div class="flex items-center space-x-4">
+          <button onclick="openModal('orderModal')" class="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold text-xs shadow transition flex items-center space-x-1.5">
+            <i class="fa-solid fa-plus"></i><span>New Invoice</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="flex-1 overflow-y-auto p-6 space-y-6">
+
+        <div id="lowStockBanner" class="hidden bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-xl flex items-center justify-between text-xs font-bold shadow-sm">
+          <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-triangle-exclamation text-rose-600 text-base"></i>
+            <span id="lowStockText">Attention: Some items in stock have low quantity!</span>
+          </div>
+        </div>
+
+        <div id="expiryBanner" class="hidden bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl flex items-center justify-between text-xs font-bold shadow-sm">
+          <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-clock text-amber-600 text-base"></i>
+            <span id="expiryText">Warning: Some items are near expiry!</span>
+          </div>
+        </div>
+
+        <div id="tab-dashboard" class="tab-content space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <div class="text-xs font-bold uppercase text-slate-400">Total Sales Revenue</div>
+              <div id="stat-dailysales" class="text-2xl font-black text-slate-900 mt-1">Rs 0</div>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <div class="text-xs font-bold uppercase text-slate-400">Inventory Items</div>
+              <div id="stat-stock" class="text-2xl font-black text-slate-900 mt-1">0 Items</div>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <div class="text-xs font-bold uppercase text-slate-400">Active Customers</div>
+              <div id="stat-customers" class="text-2xl font-black text-slate-900 mt-1">0 Customers</div>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <div class="text-xs font-bold uppercase text-slate-400">Total Payouts</div>
+              <div id="stat-payout" class="text-2xl font-black text-rose-600 mt-1">Rs 0</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <h4 class="text-sm font-bold text-slate-800 mb-4">Sales Revenue Growth</h4>
+              <div class="h-64"><canvas id="salesChart"></canvas></div>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <h4 class="text-sm font-bold text-slate-800 mb-4">Payment Out Vouchers Breakdown</h4>
+              <div class="h-64"><canvas id="payoutChart"></canvas></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <h4 class="text-sm font-bold text-slate-800 mb-4">Financials Overview (Sales vs Purchases)</h4>
+              <div class="h-64"><canvas id="reportsChart"></canvas></div>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <h4 class="text-sm font-bold text-slate-800 mb-4">Activity Tracking Audit Trail</h4>
+              <div class="overflow-y-auto max-h-64">
+                <table class="w-full text-xs text-left">
+                  <tbody id="trackingTableBody">
+                    <tr>
+                      <td colspan="2" class="p-4 text-center text-slate-400">No activity recorded yet.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-orders" class="tab-content hidden space-y-4">
+          <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <h4 class="text-sm font-bold text-slate-800">Sales Invoices Directory</h4>
+            <button onclick="openModal('orderModal')" class="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold text-xs shadow transition">Create Invoice</button>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <table class="w-full text-xs text-left border-collapse">
+              <thead class="bg-slate-50 text-slate-600 uppercase border-b border-slate-200 font-bold">
+                <tr>
+                  <th class="p-3">Invoice #</th>
+                  <th class="p-3">Date</th>
+                  <th class="p-3">Customer Details</th>
+                  <th class="p-3">Product Info</th>
+                  <th class="p-3">Qty & Rate</th>
+                  <th class="p-3">Tax / Disc</th>
+                  <th class="p-3">Total (Rs)</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody">
+                <tr>
+                  <td colspan="8" class="p-4 text-center text-slate-400">No invoices or sales records found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-purchaseinvoices" class="tab-content hidden space-y-4">
+          <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <h4 class="text-sm font-bold text-slate-800">Purchase Invoices Directory</h4>
+            <button onclick="openModal('purchaseInvoiceModal')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs shadow transition">Create Purchase Invoice</button>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <table class="w-full text-xs text-left border-collapse">
+              <thead class="bg-slate-50 text-slate-600 uppercase border-b border-slate-200 font-bold">
+                <tr>
+                  <th class="p-3">P.Invoice #</th>
+                  <th class="p-3">Date</th>
+                  <th class="p-3">Supplier Name</th>
+                  <th class="p-3">Item Purchased</th>
+                  <th class="p-3">Qty / Rate</th>
+                  <th class="p-3">Total Amount (Rs)</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="purchaseInvoicesTableBody">
+                <tr>
+                  <td colspan="7" class="p-4 text-center text-slate-400">No purchase invoices found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-dailyreports" class="tab-content hidden space-y-6">
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <h4 class="text-sm font-extrabold text-slate-900">Daily Financial & Performance Analytics</h4>
+              <p class="text-[11px] text-slate-500 mt-0.5">Real-time daily turnover breakdown for sales, purchases, and net balance.</p>
+            </div>
+            <button onclick="renderAllData()" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-bold text-xs shadow transition">
+              <i class="fa-solid fa-rotate mr-1"></i> Refresh Metrics
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-emerald-500">
+              <div class="text-xs font-bold uppercase text-slate-400">Daily Sale Revenue</div>
+              <div id="dailySaleRevDisplay" class="text-2xl font-black text-emerald-600 mt-1">Rs 0</div>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-blue-500">
+              <div class="text-xs font-bold uppercase text-slate-400">Daily Purchase Expense</div>
+              <div id="dailyPurchaseExpDisplay" class="text-2xl font-black text-blue-600 mt-1">Rs 0</div>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-orange-500">
+              <div class="text-xs font-bold uppercase text-slate-400">Total Net Revenue Turnover</div>
+              <div id="dailyTotalRevDisplay" class="text-2xl font-black text-slate-900 mt-1">Rs 0</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <h4 class="text-sm font-bold text-slate-800 mb-4">Daily Sales Trend Comparison</h4>
+              <div class="h-64"><canvas id="dailySalesChart"></canvas></div>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <h4 class="text-sm font-bold text-slate-800 mb-4">Daily Purchase Trend Comparison</h4>
+              <div class="h-64"><canvas id="dailyPurchasesChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-quotations" class="tab-content hidden space-y-4">
+          <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <h4 class="text-sm font-bold text-slate-800">Generated Quotations</h4>
+            <button onclick="openModal('quotationModal')" class="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold text-xs shadow transition">Create Quotation</button>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <table class="w-full text-xs text-left border-collapse">
+              <thead class="bg-slate-50 text-slate-600 uppercase border-b border-slate-200 font-bold">
+                <tr>
+                  <th class="p-3">Customer / Shop</th>
+                  <th class="p-3">Product Name</th>
+                  <th class="p-3">Rate</th>
+                  <th class="p-3">Discount Scheme</th>
+                  <th class="p-3">Date</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="quotationsTableBody">
+                <tr>
+                  <td colspan="6" class="p-4 text-center text-slate-400">No quotations found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-patients" class="tab-content hidden space-y-4">
+          <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <h4 class="text-sm font-bold text-slate-800">Patient Records / Clinical Info</h4>
+            <button onclick="openModal('patientModal')" class="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold text-xs shadow transition">Add Patient</button>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <table class="w-full text-xs text-left border-collapse">
+              <thead class="bg-slate-50 text-slate-600 uppercase border-b border-slate-200 font-bold">
+                <tr>
+                  <th class="p-3">Patient Name / Age</th>
+                  <th class="p-3">Gender / Address</th>
+                  <th class="p-3">Doctor</th>
+                  <th class="p-3">Service</th>
+                  <th class="p-3">Fee & Status</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="patientsTableBody">
+                <tr>
+                  <td colspan="6" class="p-4 text-center text-slate-400">No patient records found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-debitnotes" class="tab-content hidden space-y-4">
+          <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <h4 class="text-sm font-bold text-slate-800">Debit Notes & Returns</h4>
+            <button onclick="openModal('debitModal')" class="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold text-xs shadow transition">Issue Debit Note</button>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <table class="w-full text-xs text-left border-collapse">
+              <thead class="bg-slate-50 text-slate-600 uppercase border-b border-slate-200 font-bold">
+                <tr>
+                  <th class="p-3">Debit Note #</th>
+                  <th class="p-3">Party Name</th>
+                  <th class="p-3">Orig Invoice</th>
+                  <th class="p-3">Item & Qty</th>
+                  <th class="p-3">Reason</th>
+                  <th class="p-3">Amount (Rs)</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="debitTableBody">
+                <tr>
+                  <td colspan="7" class="p-4 text-center text-slate-400">No debit notes or returns found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-inventory" class="tab-content hidden space-y-4">
+          <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <h4 class="text-sm font-bold text-slate-800">Inventory & Stock Management</h4>
+            <button onclick="openModal('itemModal')" class="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold text-xs shadow transition">Add Item</button>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <table class="w-full text-xs text-left border-collapse">
+              <thead class="bg-slate-50 text-slate-600 uppercase border-b border-slate-200 font-bold">
+                <tr>
+                  <th class="p-3">Item Name</th>
+                  <th class="p-3">Batch #</th>
+                  <th class="p-3">Stock</th>
+                  <th class="p-3">Unit</th>
+                  <th class="p-3">Expiry Date</th>
+                  <th class="p-3">Purchase Price</th>
+                  <th class="p-3">Sale Price</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="inventoryTableBody">
+                <tr>
+                  <td colspan="8" class="p-4 text-center text-slate-400">No inventory products found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-customers" class="tab-content hidden space-y-4">
+          <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <h4 class="text-sm font-bold text-slate-800">Customers / Shops Directory</h4>
+            <button onclick="openModal('customerModal')" class="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold text-xs shadow transition">Add Customer</button>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <table class="w-full text-xs text-left border-collapse">
+              <thead class="bg-slate-50 text-slate-600 uppercase border-b border-slate-200 font-bold">
+                <tr>
+                  <th class="p-3">Shop / Customer</th>
+                  <th class="p-3">Contact & Category</th>
+                  <th class="p-3">Address / Route</th>
+                  <th class="p-3">NTN / CNIC</th>
+                  <th class="p-3">Credit Balance</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="customerTableBody">
+                <tr>
+                  <td colspan="6" class="p-4 text-center text-slate-400">No customers found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-suppliers" class="tab-content hidden space-y-4">
+          <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <h4 class="text-sm font-bold text-slate-800">Suppliers & Pharma Companies</h4>
+            <button onclick="openModal('supplierModal')" class="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold text-xs shadow transition">Add Supplier</button>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <table class="w-full text-xs text-left border-collapse">
+              <thead class="bg-slate-50 text-slate-600 uppercase border-b border-slate-200 font-bold">
+                <tr>
+                  <th class="p-3">Company Name</th>
+                  <th class="p-3">Contact Details</th>
+                  <th class="p-3">Address</th>
+                  <th class="p-3">NTN / Tax</th>
+                  <th class="p-3">Credit Balance</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="supplierTableBody">
+                <tr>
+                  <td colspan="6" class="p-4 text-center text-slate-400">No suppliers found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-purchases" class="tab-content hidden space-y-4">
+          <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <h4 class="text-sm font-bold text-slate-800">Purchase Orders</h4>
+            <button onclick="openModal('purchaseModal')" class="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold text-xs shadow transition">Create PO</button>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <table class="w-full text-xs text-left border-collapse">
+              <thead class="bg-slate-50 text-slate-600 uppercase border-b border-slate-200 font-bold">
+                <tr>
+                  <th class="p-3">Ref #</th>
+                  <th class="p-3">Supplier</th>
+                  <th class="p-3">Item Name</th>
+                  <th class="p-3">Amount</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="purchasesTableBody">
+                <tr>
+                  <td colspan="5" class="p-4 text-center text-slate-400">No purchase records found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-payouts" class="tab-content hidden space-y-4">
+          <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <h4 class="text-sm font-bold text-slate-800">Payment Out Vouchers</h4>
+            <button onclick="openModal('payoutModal')" class="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold text-xs shadow transition">Create Payout</button>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <table class="w-full text-xs text-left border-collapse">
+              <thead class="bg-slate-50 text-slate-600 uppercase border-b border-slate-200 font-bold">
+                <tr>
+                  <th class="p-3">Voucher #</th>
+                  <th class="p-3">Recipient</th>
+                  <th class="p-3">Mode</th>
+                  <th class="p-3">Amount</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="payoutsTableBody">
+                <tr>
+                  <td colspan="5" class="p-4 text-center text-slate-400">No payout vouchers found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="orderModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6 border border-slate-200 my-8">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+        <h3 class="font-extrabold text-slate-900 text-base">Create Tax Sales Invoice</h3>
+        <button onclick="closeModal('orderModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="space-y-4 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Invoice Number</label>
+            <input type="text" id="invNum" placeholder="INV-10001" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Date</label>
+            <input type="date" id="invDate" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Customer / Shop Name *</label>
+            <input type="text" id="invCustName" placeholder="e.g. Al-Madina Medical Store" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">NTN / CNIC</label>
+            <input type="text" id="invCustNtnCnic" placeholder="35202-1234567-1" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Customer Address</label>
+            <input type="text" id="invCustAddress" placeholder="Shop # 4, Main Bazar" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Province</label>
+            <select id="invCustProvince" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 bg-white">
+              <option value="Punjab">Punjab</option>
+              <option value="Sindh">Sindh</option>
+              <option value="KPK">KPK</option>
+              <option value="Balochistan">Balochistan</option>
+              <option value="Islamabad">Islamabad</option>
+            </select>
+          </div>
+        </div>
+        <div class="relative">
+          <label class="block font-bold uppercase text-slate-600 mb-1">Product Name (Search Master List) *</label>
+          <input type="text" id="invProdName" placeholder="Type medicine name..." autocomplete="off" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          <div id="dropdown-invProdName" class="hidden absolute left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-xl max-h-48 overflow-y-auto z-30 mt-1"></div>
+        </div>
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">HS Code</label>
+            <input type="text" id="invHsCode" value="3004.90" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">UOM</label>
+            <select id="invUom" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 bg-white">
+              <option value="Pcs">Pcs</option>
+              <option value="Boxes">Boxes</option>
+              <option value="Packets">Packets</option>
+              <option value="Bottles">Bottles</option>
+              <option value="Vials">Vials</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Quantity</label>
+            <input type="number" id="invQty" value="1" min="1" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Rate (Rs)</label>
+            <input type="number" id="invRate" placeholder="0.00" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">GST / Tax %</label>
+            <input type="number" id="invTaxPct" value="0" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Discount (Rs)</label>
+            <input type="number" id="invDiscount" value="0" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div class="p-3 bg-slate-50 rounded-lg flex items-center justify-between border">
+          <span class="font-bold text-slate-700">Calculated Invoice Total:</span>
+          <span id="invTotalDisplay" class="font-black text-base text-orange-600">Rs 0.00</span>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('orderModal')" class="px-4 py-2 border rounded-lg font-bold text-slate-600 hover:bg-slate-100">Cancel</button>
+          <button type="button" onclick="saveOrder()" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold shadow">Save Invoice</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="purchaseInvoiceModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 border border-slate-200">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+        <h3 class="font-extrabold text-slate-900 text-base">Create Purchase Invoice</h3>
+        <button onclick="closeModal('purchaseInvoiceModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="space-y-4 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Purchase Invoice #</label>
+            <input type="text" id="pinvNum" placeholder="PINV-5001" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Date</label>
+            <input type="date" id="pinvDate" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Supplier / Pharma Company Name *</label>
+          <input type="text" id="pinvSupplier" placeholder="e.g. Getz Pharma / Searle" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500">
+        </div>
+        <div class="relative">
+          <label class="block font-bold uppercase text-slate-600 mb-1">Item / Medicine Name *</label>
+          <input type="text" id="pinvItem" placeholder="Search medicine..." autocomplete="off" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500">
+          <div id="dropdown-pinvItem" class="hidden absolute left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-xl max-h-48 overflow-y-auto z-30 mt-1"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Quantity</label>
+            <input type="number" id="pinvQty" value="1" min="1" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Purchase Rate (Rs)</label>
+            <input type="number" id="pinvRate" placeholder="0.00" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500">
+          </div>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('purchaseInvoiceModal')" class="px-4 py-2 border rounded-lg font-bold text-slate-600 hover:bg-slate-100">Cancel</button>
+          <button type="button" onclick="savePurchaseInvoice()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold shadow">Save Purchase Invoice</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="quotationModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+        <h3 class="font-extrabold text-slate-900 text-base">Generate Quotation</h3>
+        <button onclick="closeModal('quotationModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Customer / Shop Name *</label>
+          <input type="text" id="quoCustomer" placeholder="Customer name" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div class="relative">
+          <label class="block font-bold uppercase text-slate-600 mb-1">Product Name *</label>
+          <input type="text" id="quoProduct" placeholder="Search medicine..." autocomplete="off" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          <div id="dropdown-quoProduct" class="hidden absolute left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-xl max-h-48 overflow-y-auto z-30 mt-1"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Rate / Price (Rs)</label>
+            <input type="number" id="quoRate" placeholder="0.00" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Discount Scheme</label>
+            <input type="text" id="quoDiscount" placeholder="e.g. 10+1 Free" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Date</label>
+          <input type="date" id="quoDate" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('quotationModal')" class="px-4 py-2 border rounded-lg font-bold text-slate-600 hover:bg-slate-100">Cancel</button>
+          <button type="button" onclick="saveQuotation()" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold shadow">Save Quotation</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="patientModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+        <h3 class="font-extrabold text-slate-900 text-base">Add Patient Record</h3>
+        <button onclick="closeModal('patientModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Patient Full Name *</label>
+          <input type="text" id="patName" placeholder="Patient name" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Age (Years)</label>
+            <input type="number" id="patAge" placeholder="30" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Gender</label>
+            <select id="patGender" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 bg-white">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Contact Phone</label>
+            <input type="text" id="patContact" placeholder="0300-1234567" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Doctor / Consultant</label>
+            <input type="text" id="patDoctor" placeholder="Dr. Ali" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Address</label>
+          <input type="text" id="patAddress" placeholder="City address" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div class="grid grid-cols-3 gap-3">
+          <div class="col-span-2">
+            <label class="block font-bold uppercase text-slate-600 mb-1">Service / Consultation</label>
+            <input type="text" id="patService" placeholder="Checkup / Lab Test" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Fee (Rs)</label>
+            <input type="number" id="patFee" placeholder="500" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Payment Status</label>
+          <select id="patStatus" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 bg-white">
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+          </select>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('patientModal')" class="px-4 py-2 border rounded-lg font-bold text-slate-600 hover:bg-slate-100">Cancel</button>
+          <button type="button" onclick="savePatient()" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold shadow">Save Patient</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="debitModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+        <h3 class="font-extrabold text-slate-900 text-base">Issue Debit Note / Return</h3>
+        <button onclick="closeModal('debitModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="space-y-4 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Debit Note #</label>
+            <input type="text" id="debNum" placeholder="DN-1001" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Date</label>
+            <input type="date" id="debDate" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Party Name *</label>
+            <input type="text" id="debParty" placeholder="Customer / Supplier name" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Original Invoice Ref</label>
+            <input type="text" id="debOrigInv" placeholder="INV-10001" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div class="relative">
+          <label class="block font-bold uppercase text-slate-600 mb-1">Returned Item Name *</label>
+          <input type="text" id="debItem" placeholder="Search medicine..." autocomplete="off" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          <div id="dropdown-debItem" class="hidden absolute left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-xl max-h-48 overflow-y-auto z-30 mt-1"></div>
+        </div>
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Qty</label>
+            <input type="number" id="debQty" value="1" min="1" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Rate (Rs)</label>
+            <input type="number" id="debRate" placeholder="0.00" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Tax / GST (Rs)</label>
+            <input type="number" id="debTax" value="0" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Total Amount (Rs)</label>
+          <input type="text" id="debAmt" readonly class="w-full px-3 py-2 border rounded-lg bg-slate-50 font-bold text-slate-800">
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Reason for Return</label>
+          <select id="debReason" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 bg-white">
+            <option value="Damaged Goods">Damaged Goods</option>
+            <option value="Near Expiry">Near Expiry</option>
+            <option value="Wrong Item Supplied">Wrong Item Supplied</option>
+            <option value="Excess Supply">Excess Supply</option>
+          </select>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('debitModal')" class="px-4 py-2 border rounded-lg font-bold text-slate-600 hover:bg-slate-100">Cancel</button>
+          <button type="button" onclick="saveDebitNote()" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold shadow">Save Debit Note</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="itemModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+        <h3 class="font-extrabold text-slate-900 text-base">Add Inventory Item</h3>
+        <button onclick="closeModal('itemModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="space-y-4 text-xs">
+        <div class="relative">
+          <label class="block font-bold uppercase text-slate-600 mb-1">Item Name *</label>
+          <input type="text" id="itemName" placeholder="Search medicine..." autocomplete="off" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          <div id="dropdown-itemName" class="hidden absolute left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-xl max-h-48 overflow-y-auto z-30 mt-1"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Batch Number</label>
+            <input type="text" id="itemBatch" placeholder="B-9081" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Stock Quantity</label>
+            <input type="number" id="itemStock" value="50" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Unit</label>
+            <select id="itemUnit" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 bg-white">
+              <option value="Pcs">Pcs</option>
+              <option value="Boxes">Boxes</option>
+              <option value="Packets">Packets</option>
+              <option value="Bottles">Bottles</option>
+              <option value="Vials">Vials</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Expiry Date</label>
+            <input type="date" id="itemExpiry" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Purchase Price (Rs)</label>
+            <input type="number" id="itemPurchasePrice" placeholder="0.00" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Sale Price (Rs)</label>
+            <input type="number" id="itemSalePrice" placeholder="0.00" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('itemModal')" class="px-4 py-2 border rounded-lg font-bold text-slate-600 hover:bg-slate-100">Cancel</button>
+          <button type="button" onclick="saveItem()" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold shadow">Save Item</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="customerModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+        <h3 class="font-extrabold text-slate-900 text-base">Add Customer / Shop Profile</h3>
+        <button onclick="closeModal('customerModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Shop / Pharmacy Name *</label>
+          <input type="text" id="custName" placeholder="Al-Shifa Medical Store" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Owner Name</label>
+            <input type="text" id="custOwner" placeholder="Mr. Ahmed" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Contact Phone</label>
+            <input type="text" id="custContact" placeholder="0300-9876543" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Category</label>
+            <select id="custCategory" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 bg-white">
+              <option value="Retailer">Retailer</option>
+              <option value="Wholesaler">Wholesaler</option>
+              <option value="Corporate">Corporate</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">NTN / CNIC</label>
+            <input type="text" id="custNtnCnic" placeholder="35201-..." class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Address / Route</label>
+          <input type="text" id="custAddress" placeholder="Main Road, City" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Opening Credit Balance (Rs)</label>
+          <input type="number" id="custCredit" value="0" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('customerModal')" class="px-4 py-2 border rounded-lg font-bold text-slate-600 hover:bg-slate-100">Cancel</button>
+          <button type="button" onclick="saveCustomer()" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold shadow">Save Customer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="supplierModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+        <h3 class="font-extrabold text-slate-900 text-base">Add Pharma Supplier</h3>
+        <button onclick="closeModal('supplierModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Supplier / Company Name *</label>
+          <input type="text" id="supName" placeholder="Getz Pharma" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Contact Person</label>
+            <input type="text" id="supContactPerson" placeholder="Mr. Bilal" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Phone Number *</label>
+            <input type="text" id="supContact" placeholder="042-3111222" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">Email Address</label>
+            <input type="email" id="supEmail" placeholder="info@supplier.com" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+          <div>
+            <label class="block font-bold uppercase text-slate-600 mb-1">NTN / Sales Tax #</label>
+            <input type="text" id="supNtnTax" placeholder="1234567-8" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Address</label>
+          <input type="text" id="supAddress" placeholder="Industrial Area" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Opening Credit Balance (Rs)</label>
+          <input type="number" id="supCredit" value="0" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('supplierModal')" class="px-4 py-2 border rounded-lg font-bold text-slate-600 hover:bg-slate-100">Cancel</button>
+          <button type="button" onclick="saveSupplier()" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold shadow">Save Supplier</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="purchaseModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+        <h3 class="font-extrabold text-slate-900 text-base">Create Purchase Order</h3>
+        <button onclick="closeModal('purchaseModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Supplier Name *</label>
+          <input type="text" id="purSupplier" placeholder="Supplier company" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div class="relative">
+          <label class="block font-bold uppercase text-slate-600 mb-1">Item Name *</label>
+          <input type="text" id="purItem" placeholder="Search medicine..." autocomplete="off" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+          <div id="dropdown-purItem" class="hidden absolute left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-xl max-h-48 overflow-y-auto z-30 mt-1"></div>
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Total Amount (Rs)</label>
+          <input type="number" id="purAmt" placeholder="0.00" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('purchaseModal')" class="px-4 py-2 border rounded-lg font-bold text-slate-600 hover:bg-slate-100">Cancel</button>
+          <button type="button" onclick="savePurchase()" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold shadow">Save PO</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="payoutModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+        <h3 class="font-extrabold text-slate-900 text-base">Create Payment Out Voucher</h3>
+        <button onclick="closeModal('payoutModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Recipient Name *</label>
+          <input type="text" id="payoutRecipient" placeholder="Recipient / Vendor" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Payment Mode</label>
+          <select id="payoutMode" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 bg-white">
+            <option value="Cash">Cash</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+            <option value="Cheque">Cheque</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-slate-600 mb-1">Amount (Rs)</label>
+          <input type="number" id="payoutAmt" placeholder="0.00" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('payoutModal')" class="px-4 py-2 border rounded-lg font-bold text-slate-600 hover:bg-slate-100">Cancel</button>
+          <button type="button" onclick="savePayout()" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold shadow">Save Payout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const masterMedicinesList = [
+      "Mecobalamin Injection", "Pyridoxine Tablet", "Thiamine Injection",
+      "Riboflavin Tablet", "Biotin Tablet", "Ascorbic Acid Tablet", "Cholecalciferol Capsule", "Ergocalciferol Capsule",
+      "Calcium Carbonate Tablet", "Calcium Citrate Tablet", "Magnesium Oxide Tablet", "Potassium Citrate Syrup",
+      "Sodium Chloride Tablets", "Oral Rehydration Salts", "Acetylsalicylic Acid Tablet", "Dipyridamole Tablet",
+      "Cilostazol Tablet", "Pentoxifylline Tablet", "Bosentan Tablet", "Sildenafil Oral Suspension", "Riociguat Tablet",
+      "Treprostinil Injection", "Epoprostenol Injection", "Dornase Alfa Solution", "Theophylline Syrup", "Aminophylline Injection",
+      "Budesonide Nasal Spray", "Beclomethasone Inhaler", "Ciclesonide Inhaler", "Tiotropium Inhaler", "Aclidinium Inhaler",
+      "Glycopyrronium Inhaler", "Indacaterol Inhaler", "Vilanterol Inhaler", "Umeclidinium Inhaler", "Olodaterol Inhaler",
+      "Roflumilast Tablet", "Montelukast Granules", "Levosalbutamol Syrup", "Levosalbutamol Inhaler", "Ambroxol Tablet",
+      "Erdosteine Capsule", "Guaifenesin Syrup", "Dextromethorphan Syrup", "Noscapine Syrup", "Acarbose Tablet 25mg",
+      "Miglitol Tablet 50mg", "Miglitol Tablet 100mg", "Pioglitazone Tablet 45mg", "Rosiglitazone Tablet",
+      "Linagliptin-Metformin Tablet", "Vildagliptin-Metformin Tablet", "Empagliflozin-Metformin Tablet",
+      "Dapagliflozin-Metformin Tablet", "Canagliflozin-Metformin Tablet", "Insulin Degludec Injection",
+      "Insulin Detemir Injection", "Insulin Regular Injection", "Insulin NPH Injection", "Enoxaparin Injection 40mg",
+      "Enoxaparin Injection 60mg", "Fondaparinux Injection", "Heparin Injection", "Protamine Injection", "Atorvastatin 40mg",
+      "Atorvastatin 80mg", "Rosuvastatin 5mg", "Rosuvastatin 40mg", "Fenofibrate Capsule 200mg", "Omega-3 Fish Oil Capsule",
+      "Clonidine Tablet", "Doxazosin Tablet", "Prazosin Tablet", "Terazosin Tablet", "Ivabradine Tablet", "Amiodarone Tablet",
+      "Amiodarone Injection", "Flecainide Tablet", "Propafenone Tablet", "Sotalol Tablet", "Nicorandil Tablet",
+      "Trimetazidine Tablet", "Acetazolamide Tablet", "Acetazolamide Injection", "Allopurinol Tablet 100mg",
+      "Allopurinol Tablet 300mg", "Febuxostat Tablet 40mg", "Febuxostat Tablet 80mg", "Colchicine Tablet",
+      "Methotrexate Tablet 2.5mg", "Methotrexate Injection", "Hydroxychloroquine Tablet", "Sulfasalazine EC Tablet",
+      "Leflunomide Tablet", "Azathioprine Tablet", "Cyclosporine Capsule", "Tacrolimus Capsule", "Mycophenolate Mofetil Tablet",
+      "Cyclophosphamide Injection", "Tamoxifen Tablet", "Letrozole Tablet", "Anastrozole Tablet", "Exemestane Tablet",
+      "Leuprolide Injection", "Goserelin Injection", "Finasteride Tablet 5mg", "Dutasteride Capsule", "Tamsulosin Capsule 0.4mg",
+      "Alfuzosin Tablet", "Solifenacin Tablet", "Oxybutynin Tablet", "Mirabegron Tablet", "Sildenafil Tablet 50mg",
+      "Sildenafil Tablet 100mg", "Tadalafil Tablet 5mg", "Tadalafil Tablet 20mg", "Vardenafil Tablet", "Fluoxetine Tablet",
+      "Paroxetine Tablet", "Sertraline Tablet", "Venlafaxine Capsule", "Duloxetine Capsule", "Bupropion Tablet",
+      "Mirtazapine Tablet", "Trazodone Tablet", "Amitriptyline Tablet", "Nortriptyline Capsule", "Donepezil Tablet",
+      "Memantine Tablet", "Piracetam Tablet", "Piracetam Injection", "Citicoline Tablet", "Citicoline Injection",
+      "Levetiracetam Injection", "Topiramate Tablet", "Oxcarbazepine Tablet", "Zonisamide Capsule", "Lacosamide Tablet",
+      "Ropinirole Tablet", "Pramipexole Tablet", "Entacapone Tablet", "Carbidopa-Levodopa Tablet", "Benztropine Tablet",
+      "Trihexyphenidyl Tablet", "Biperiden Tablet", "Selegiline Tablet", "Amlodipine Tablet 5mg", "Amlodipine Tablet 10mg",
+      "Bisoprolol Tablet 10mg", "Propranolol Tablet 10mg", "Propranolol Tablet 80mg", "Nifedipine Tablet 20mg",
+      "Nifedipine Retard 30mg", "Verapamil Tablet 80mg", "Diltiazem SR 90mg", "Candesartan Tablet 16mg",
+      "Candesartan Tablet 32mg", "Irbesartan Tablet 300mg", "Valsartan Tablet 160mg", "Telmisartan Tablet 20mg",
+      "Chlorthalidone Tablet 25mg", "Indapamide Tablet 1.5mg", "Hydralazine Tablet 25mg", "Methyldopa Tablet 500mg",
+      "Isosorbide Mononitrate Tablet", "Nitroglycerin Tablet", "Digoxin Tablet 0.25mg", "Clarithromycin Suspension",
+      "Co-Amoxiclav Tablet 375mg", "Co-Amoxiclav Tablet 1g", "Cefuroxime Suspension", "Cefixime Suspension 100mg",
+      "Cefpodoxime Tablet 200mg", "Cefpodoxime Suspension", "Cefaclor Suspension", "Cefaclor Capsule", "Cloxacillin Injection",
+      "Ampicillin Suspension", "Ampiclox Capsule", "Ampiclox Injection", "Amoxicillin Capsule 250mg",
+      "Amoxicillin Suspension 250mg", "Roxithromycin Suspension", "Spiramycin Tablet", "Doxycycline Tablet 100mg",
+      "Minocycline Capsule", "Nitrofurantoin Capsule 100mg", "Fosfomycin Sachet", "Co-Trimoxazole Tablet",
+      "Co-Trimoxazole Suspension", "Metformin Tablet 850mg", "Metformin Tablet 1000mg", "Gliclazide Tablet 80mg",
+      "Glimepiride Tablet 1mg", "Glimepiride Tablet 3mg", "Glipizide Tablet", "Saxagliptin Tablet", "Canagliflozin Tablet",
+      "Insulin Glargine Injection", "Insulin Aspart Injection", "Insulin Lispro Injection", "Pantoprazole Injection",
+      "Omeprazole Injection", "Rabeprazole Injection", "Famotidine Tablet", "Ranitidine Injection", "Hyoscine Butylbromide Injection",
+      "Dicyclomine Syrup", "Dicyclomine Tablet", "Loperamide Syrup", "Racecadotril Sachet", "Mesalazine Tablet",
+      "Sulfasalazine Tablet", "Mesalazine Suppository", "Ondansetron Syrup", "Granisetron Injection", "Domperidone Drops",
+      "Methylprednisolone Tablet", "Methylprednisolone Injection", "Prednisolone Tablet", "Prednisolone Syrup",
+      "Dexamethasone Tablet", "Dexamethasone Injection", "Betamethasone Injection", "Triamcinolone Cream",
+      "Clobetasone Cream", "Ammonium Lactate Lotion", "Azelaic Acid Cream", "Hydroquinone Cream", "Erythromycin Gel",
+      "Clindamycin Gel", "Fusidic Acid Cream", "Ketoconazole Shampoo", "Selenium Sulphide Lotion", "Bimatoprost Eye Drops",
+      "Carboxymethylcellulose Eye Drops", "Nepafenac Eye Drops", "Gatifloxacin Eye Drops", "Moxifloxacin Tablet",
+      "Levofloxacin Tablet 750mg", "Cefdinir Capsule", "Cefdinir Suspension", "Etoricoxib Tablet 60mg", "Etoricoxib Tablet 120mg",
+      "Dexketoprofen Tablet", "Tapentadol Tablet", "Tramadol Tablet 100mg", "Panadol Tablet 500mg", "Panadol CF",
+      "Panadol Extend", "Panadol Extra", "Panadol Actifast", "Disprin Tablet", "Disprin CV", "Aspirin Tablet 75mg",
+      "Brufen Tablet 400mg", "Brufen Syrup", "Brufen Pediatric Drops", "Calpol Syrup", "Calpol Pediatric Drops",
+      "Augmentin Tablet 625mg", "Augmentin Syrup 457mg", "Augmentin 1000mg", "Augmentin Drops", "Amoxil Capsule 500mg",
+      "Amoxil Syrup", "Arinac Tablet", "Flagyl Tablet 400mg", "Flagyl Syrup", "Flagyl Pediatric Suspension",
+      "Risek Capsule 20mg", "Risek Capsule 40mg", "Omega Capsule 20mg", "Losec Capsule", "Controloc 40mg",
+      "Peptazole Capsule", "Nexium 40mg", "Nexpro Tablet 20mg", "Nexpro Tablet 40mg", "Esso Capsule", "Gaviscon Syrup",
+      "Gelusil Syrup", "Rennie Tablets", "Mucogel Suspension", "Mucaine Syrup", "Motilium Tablet", "Motilium Syrup",
+      "Domel Tablet", "Motinorm Tablet", "Buscopan Tablet", "Gravinate Tablet", "Gravinate Syrup", "Dramexin Tablet",
+      "Lomotil Tablet", "Imodium Capsule", "Entamizole Tablet", "Velosef Capsule 500mg", "Velosef Syrup", "Ceftum Tablet 250mg",
+      "Ceftum Tablet 500mg", "Cefspan Tablet 200mg", "Cefspan Suspension", "Cefixime Tablet 400mg", "Ceforal Tablet",
+      "Cefim Tablet", "Cefim Suspension", "Cefiget Tablet", "Zithromax Tablet 250mg", "Zithromax Syrup", "Azomax Tablet 500mg",
+      "Azomax Suspension", "Klaricid Tablet 500mg", "Klaricid Suspension", "Erythrocin Tablet", "Ciproxin Tablet 500mg",
+      "Ciprofloxacin Infusion", "Noroxin Tablet", "Levoxin Tablet", "Tavanic Tablet 500mg", "Moxif Tablet", "Dalacin C Capsule",
+      "Clindamycin Capsule", "Doxycycline Capsule 100mg", "Tetracycline Capsule", "Fluconazole Capsule 150mg", "Nystatin Drops",
+      "Clotrimazole Vaginal Tablet", "Metronidazole Infusion", "Gentamicin Injection", "Amikacin Injection", "Lincomycin Injection",
+      "Rocephin Injection 1g", "Fortum Injection 1g", "Ceftriaxone Injection 1g", "Meropenem Injection 1g", "Vancomycin Injection",
+      "Unasyn Injection", "Tazocin Injection", "Zinacef Injection", "Voveran Tablet 50mg", "Voveran Injection", "Dicloran Tablet",
+      "Dicloran SR", "Dicloran Gel", "Voltaren Emulgel", "Ponstan Forte Tablet", "Nalgesin Tablet", "Naprosyn Tablet",
+      "Ansaid Tablet", "Celebrex Capsule 200mg", "Arcoxia Tablet", "Mobic Tablet", "Ketorol Injection", "Ketorolac Tablet",
+      "Flector Patch", "Nuberol Forte Tablet", "Tramal Capsule 50mg", "Tramal Injection", "Hydryllin Syrup", "Tixylix Syrup",
+      "Corax Syrup", "Broncholin Syrup", "Phensedyl Syrup", "Actifed Syrup", "Benadryl Syrup", "Ascoril Syrup", "Mucosolvan Syrup",
+      "Corex Syrup", "TusQ Syrup", "Alex Syrup", "Ventolin Syrup", "Solvin Syrup", "Ambroxol Syrup", "Avil Tablet",
+      "Avil Injection", "Avil Pediatric Drops", "Rigix Tablet", "Zyrtec Tablet", "Claritin Tablet", "Kestine Tablet",
+      "Polaramine Syrup", "Telfast Tablet 120mg", "Telfast Tablet 180mg", "Xyzal Tablet", "Singulair Tablet 10mg", "Montiget Tablet",
+      "Deriphyllin Tablet", "Deriphyllin Retard", "Ventolin Inhaler", "Seretide Inhaler 125", "Seretide Inhaler 250",
+      "Symbicort Inhaler", "Budecort Respules", "Duolin Respules", "Glucophage Tablet 500mg", "Glucophage XR 1000mg",
+      "Daonil Tablet 5mg", "Amaryl Tablet 2mg", "Amaryl Tablet 4mg", "Diamicron MR 30mg", "Diamicron MR 60mg", "Getryl 1mg",
+      "Getryl 2mg", "Getryl 4mg", "Galvus 50mg", "Janumet 50/500", "Januvia 100mg", "Trajenta 5mg", "Glyset Tablet",
+      "Atorvastatin 10mg", "Atorvastatin 20mg", "Rosuvas Tablet 10mg", "Rosuvas Tablet 20mg", "Plavix Tablet 75mg",
+      "Lanoxin Tablet", "Lasix Tablet 40mg", "Aldomet Tablet 250mg", "Tenormin Tablet 50mg", "Concor Tablet 2.5mg",
+      "Concor Tablet 5mg", "Inderal Tablet 40mg", "Cardizem Tablet 30mg", "Exforge Tablet", "Micardis Tablet 40mg",
+      "Valsartan Tablet 80mg", "Cozaar 50mg", "Cozaar 100mg", "Coveram", "Loprin 75mg", "Loprin 150mg", "Telmikind 40mg",
+      "Olmetec 20mg", "Irbesartan 150mg", "Bisoprolol 5mg", "Amlocard 5mg", "Captopril Tablet", "Enalapril Tablet 5mg",
+      "Lisinopril Tablet 10mg", "Norvasc Tablet 5mg", "Norvasc Tablet 10mg", "Lexotanil 1.5mg", "Lexotanil 3mg",
+      "Rivotril Tablet 0.5mg", "Rivotril Tablet 2mg", "Xanax Tablet 0.25mg", "Xanax Tablet 0.5mg", "Valium Tablet 10mg",
+      "Prozac Capsule 20mg", "Seroxat Tablet 20mg", "Citalopram Tablet 20mg", "Escitalopram Tablet 10mg", "Anafranil Tablet",
+      "Depakote Tablet 500mg", "Tegretol Tablet 200mg", "Gabapin Capsule 100mg", "Gabapin Capsule 300mg", "Lyrica Capsule 75mg",
+      "Surbex-Z Tablet", "Neurobion Tablet", "Neurobion Injection", "Cac-1000", "Caltrate 600", "Sangobion Capsule",
+      "Ferosoft Capsule", "Vitrum Tablet", "Centrum Silver", "One A Day", "Polybion Syrup", "Neutrogena Cream", "Derma-N Cream",
+      "Betnovate-N Cream", "Betnovate Cream", "Dermovate Cream", "Polyfax Skin Ointment", "Fucidin Ointment", "Fusiderm Cream",
+      "Hydrocortisone Cream", "Hydrocortisone Injection", "Solu-Cortef Injection", "Canesten Cream", "Candid Cream",
+      "Daktarin Cream", "Bactroban Ointment", "Eumovate Cream", "Elocon Cream", "Lamisil Cream", "Silver Sulfadiazine Cream",
+      "Clotrimazole Lotion", "Quadriderm Cream", "Selsun Blue Shampoo", "Nizoral Shampoo", "Scaboma Lotion", "Permethrin Cream",
+      "Minoxidil 5% Solution", "Retin-A Cream", "Accutane Capsule 20mg", "Roaccutane Capsule 10mg", "Refresh Tears",
+      "Tears Naturale", "Tobradex", "Vigamox", "Ocuflox", "Timoptol", "Xalatan", "Refresh Liquigel", "Systane Ultra",
+      "Optive", "Otidex", "Sofradex Ear Drops", "Cipro Ear Drops", "Otocain", "Waxsol", "Normal Saline 500ml", "Ringer Lactate 500ml",
+      "Dextrose 5% 500ml", "Mannitol Infusion", "Paracetamol Infusion", "Panadol Tablet 500mg", "Panadol CF", "Panadol Extend",
+      "Disprin Tablet", "Brufen Tablet 400mg", "Brufen Syrup", "Augmentin Tablet 625mg", "Augmentin Syrup 457mg",
+      "Augmentin 1000mg", "Arinac Tablet", "Calpol Syrup", "Flagyl Tablet 400mg", "Flagyl Syrup", "Risek Capsule 20mg",
+      "Risek Capsule 40mg", "Velosef Capsule 500mg", "Velosef Syrup", "Amoxil Capsule 500mg", "Amoxil Syrup", "Ceftum Tablet 250mg",
+      "Ceftum Tablet 500mg", "Zithromax Tablet 250mg", "Zithromax Syrup", "Gravinate Tablet", "Gravinate Syrup", "Buscopan Tablet",
+      "Ponstan Forte Tablet", "Nuberol Forte Tablet", "Voveran Tablet 50mg", "Voveran Injection", "Surbex-Z Tablet",
+      "Neutrogena Cream", "Gaviscon Syrup", "Gelusil Syrup", "Erythrocin Tablet", "Ciproxin Tablet 500mg", "Noroxin Tablet",
+      "Lomotil Tablet", "Imodium Capsule", "Entamizole Tablet", "Nexpro Tablet 20mg", "Nexpro Tablet 40mg", "Motilium Tablet",
+      "Motilium Syrup", "Dramexin Tablet", "Avil Tablet", "Avil Injection", "Rigix Tablet", "Zyrtec Tablet", "Telfast Tablet 120mg",
+      "Telfast Tablet 180mg", "Xyzal Tablet", "Singulair Tablet 10mg", "Montiget Tablet", "Atorvastatin 10mg", "Atorvastatin 20mg",
+      "Rosuvas Tablet 10mg", "Rosuvas Tablet 20mg", "Glucophage Tablet 500mg", "Glucophage XR 1000mg", "Daonil Tablet 5mg",
+      "Amaryl Tablet 2mg", "Amaryl Tablet 4mg", "Concor Tablet 5mg", "Concor Tablet 2.5mg", "Inderal Tablet 40mg",
+      "Cardizem Tablet 30mg", "Disprin CV", "Plavix Tablet 75mg", "Aspirin Tablet 75mg", "Lanoxin Tablet", "Lasix Tablet 40mg",
+      "Aldomet Tablet 250mg", "Tenormin Tablet 50mg", "Exforge Tablet", "Micardis Tablet 40mg", "Valsartan Tablet 80mg",
+      "Captopril Tablet", "Enalapril Tablet 5mg", "Lisinopril Tablet 10mg", "Norvasc Tablet 5mg", "Norvasc Tablet 10mg",
+      "Lexotanil 3mg", "Lexotanil 1.5mg", "Rivotril Tablet 0.5mg", "Rivotril Tablet 2mg", "Xanax Tablet 0.25mg",
+      "Xanax Tablet 0.5mg", "Valium Tablet 10mg", "Prozac Capsule 20mg", "Seroxat Tablet 20mg", "Citalopram Tablet 20mg",
+      "Escitalopram Tablet 10mg", "Anafranil Tablet", "Depakote Tablet 500mg", "Tegretol Tablet 200mg", "Gabapin Capsule 100mg",
+      "Gabapin Capsule 300mg", "Lyrica Capsule 75mg", "Celebrex Capsule 200mg", "Tramal Capsule 50mg", "Tramal Injection",
+      "Nalgesin Tablet", "Flector Patch", "Dicloran Tablet", "Ketorol Injection", "Ketorolac Tablet", "Hydryllin Syrup",
+      "Tixylix Syrup", "Corax Syrup", "Broncholin Syrup", "Phensedyl Syrup", "Actifed Syrup", "Mucaine Syrup", "Kestine Tablet",
+      "Claritin Tablet", "Polaramine Syrup", "Deriphyllin Tablet", "Deriphyllin Retard", "Ventolin Inhaler", "Seretide Inhaler 250",
+      "Seretide Inhaler 125", "Symbicort Inhaler", "Budecort Respules", "Duolin Respules", "Derma-N Cream", "Betnovate-N Cream",
+      "Dermovate Cream", "Polyfax Skin Ointment", "Fucidin Ointment", "Hydrocortisone Cream", "Canesten Cream", "Clotrimazole Lotion",
+      "Selsun Blue Shampoo", "Nizoral Shampoo", "Scaboma Lotion", "Permethrin Cream", "Minoxidil 5% Solution", "Cefixime Tablet 400mg",
+      "Retin-A Cream", "Accutane Capsule 20mg", "Roaccutane Capsule 10mg", "Clindamycin Capsule", "Doxycycline Capsule 100mg",
+      "Tetracycline Capsule", "Lincomycin Injection", "Gentamicin Injection", "Amikacin Injection", "Ceftriaxone Injection 1g",
+      "Meropenem Injection 1g", "Vancomycin Injection", "Fluconazole Capsule 150mg", "Nystatin Drops", "Clotrimazole Vaginal Tablet",
+      "Metronidazole Infusion", "Ciprofloxacin Infusion", "Paracetamol Infusion", "Normal Saline 500ml", "Ringer Lactate 500ml",
+      "Dextrose 5% 500ml", "Mannitol Infusion", "Hydrocortisone Injection", "Solu-Cortef Injection", "Cefspan Tablet 200mg",
+      "Cefspan Suspension", "Avil Pediatric Drops", "Calpol Pediatric Drops", "Brufen Pediatric Drops", "Flagyl Pediatric Suspension",
+      "Augmentin Drops"
+    ];
+    let userData = {
+      orders: [],
+      purchaseinvoices: [],
+      quotations: [],
+      patients: [],
+      debitnotes: [],
+      inventory: [],
+      customers: [],
+      suppliers: [],
+      purchases: [],
+      payouts: [],
+      activities: []
+    };
+    let currentUserRole = 'Admin';
+    let salesChartInstance = null;
+    let payoutChartInstance = null;
+    let reportsChartInstance = null;
+    let dailySalesChartInstance = null;
+    let dailyPurchasesChartInstance = null;
+    document.addEventListener('DOMContentLoaded', () => {
+      loadData();
+      setupEventListeners();
+      setupProductSearchDropdowns();
+      const savedRole = sessionStorage.getItem('bizManagerRole');
+      if (savedRole) {
+        currentUserRole = savedRole;
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('appContainer').classList.remove('hidden');
+        updateRoleUI();
+        renderAllData();
+      }
+    });
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPassword').value.trim();
+      const errEl = document.getElementById('loginError');
+      if (email === 'admin@gmail.com' && pass === 'adiladil') {
+        currentUserRole = 'Admin';
+      } else if (email === 'employ@gmail.com' && pass === 'adiladil') {
+        currentUserRole = 'Staff Manager';
+      } else {
+        errEl.classList.remove('hidden');
+        return;
+      }
+      sessionStorage.setItem('bizManagerRole', currentUserRole);
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('appContainer').classList.remove('hidden');
+      updateRoleUI();
+      renderAllData();
+    }
+
+    function logout() {
+      sessionStorage.removeItem('bizManagerRole');
+      document.getElementById('appContainer').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('loginEmail').value = '';
+      document.getElementById('loginPassword').value = '';
+      document.getElementById('loginError').classList.add('hidden');
+    }
+
+    function updateRoleUI() {
+      const disp = document.getElementById('userRoleDisplay');
+      if (disp) disp.innerText = currentUserRole;
+    }
+
+    function loadData() {
+      const saved = localStorage.getItem('bizManagerData');
+      if (saved) {
+        try {
+          userData = JSON.parse(saved);
+          if (!userData.purchaseinvoices) userData.purchaseinvoices = [];
+        } catch (e) {
+          console.error("Error loading data", e);
+        }
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem('bizManagerData', JSON.stringify(userData));
+    }
+
+    function logActivity(desc) {
+      if (!userData.activities) userData.activities = [];
+      userData.activities.unshift({
+        date: new Date().toLocaleString(),
+        desc: desc
+      });
+      if (userData.activities.length > 50) userData.activities.pop();
+    }
+
+    function setupEventListeners() {
+      ['invQty', 'invRate', 'invTaxPct', 'invDiscount'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', calculateInvoiceTotal);
+      });
+      ['debQty', 'debRate', 'debTax'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', calculateDebitTotal);
+      });
+    }
+
+    function setupProductSearchDropdowns() {
+      const fields = [{
+          inputId: 'invProdName',
+          dropdownId: 'dropdown-invProdName'
+        },
+        {
+          inputId: 'pinvItem',
+          dropdownId: 'dropdown-pinvItem'
+        },
+        {
+          inputId: 'quoProduct',
+          dropdownId: 'dropdown-quoProduct'
+        },
+        {
+          inputId: 'debItem',
+          dropdownId: 'dropdown-debItem'
+        },
+        {
+          inputId: 'itemName',
+          dropdownId: 'dropdown-itemName'
+        },
+        {
+          inputId: 'purItem',
+          dropdownId: 'dropdown-purItem'
+        }
+      ];
+      fields.forEach(field => {
+        const input = document.getElementById(field.inputId);
+        const dropdown = document.getElementById(field.dropdownId);
+        if (!input || !dropdown) return;
+        const renderDropdownList = (filterText = '') => {
+          const filtered = masterMedicinesList.filter(m => m.toLowerCase().includes(filterText.toLowerCase()));
+          if (filtered.length === 0) {
+            dropdown.innerHTML = `<div class="p-2 text-slate-400 text-center">No medicine found</div>`;
+          } else {
+            dropdown.innerHTML = filtered.map(med => `
+              <div class="p-2 hover:bg-orange-50 hover:text-orange-600 cursor-pointer border-b border-slate-100 last:border-none font-medium" onclick="selectMedicine('${field.inputId}', '${field.dropdownId}', '${med.replace(/'/g, "\\'")}')">
+                <i class="fa-solid fa-pills mr-1.5 text-orange-500"></i> ${med}
+              </div>
+            `).join('');
+          }
+          dropdown.classList.remove('hidden');
+        };
+        input.addEventListener('focus', () => {
+          renderDropdownList(input.value);
+        });
+        input.addEventListener('input', () => {
+          renderDropdownList(input.value);
+        });
+        document.addEventListener('click', (e) => {
+          if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+          }
+        });
+      });
+    }
+
+    function selectMedicine(inputId, dropdownId, medName) {
+      const input = document.getElementById(inputId);
+      const dropdown = document.getElementById(dropdownId);
+      if (input) input.value = medName;
+      if (dropdown) dropdown.classList.add('hidden');
+    }
+
+    function showTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      const target = document.getElementById('tab-' + tabId);
+      if (target) target.classList.remove('hidden');
+      const titles = {
+        'dashboard': 'Dashboard Overview',
+        'orders': 'Invoices & Sales Orders',
+        'purchaseinvoices': 'Purchase Invoices Directory',
+        'dailyreports': 'Daily Reports & Analytics',
+        'quotations': 'Generated Quotations',
+        'patients': 'Patient Records / Clinical Info',
+        'debitnotes': 'Debit Notes & Returns',
+        'inventory': 'Inventory & Stock Management',
+        'customers': 'Customers / Shops Directory',
+        'suppliers': 'Suppliers & Pharma Companies',
+        'purchases': 'Purchase Orders',
+        'payouts': 'Payment Out Vouchers'
+      };
+      const titleEl = document.getElementById('currentTabTitle');
+      if (titleEl) titleEl.innerText = titles[tabId] || 'Dashboard';
+    }
+
+    function openModal(modalId) {
+      const m = document.getElementById(modalId);
+      if (m) m.classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+      const m = document.getElementById(modalId);
+      if (m) m.classList.add('hidden');
+    }
+
+    function calculateInvoiceTotal() {
+      const qty = parseFloat(document.getElementById('invQty').value) || 0;
+      const rate = parseFloat(document.getElementById('invRate').value) || 0;
+      const taxPct = parseFloat(document.getElementById('invTaxPct').value) || 0;
+      const disc = parseFloat(document.getElementById('invDiscount').value) || 0;
+      const subtotal = qty * rate;
+      const taxAmt = (subtotal * taxPct) / 100;
+      const total = (subtotal + taxAmt) - disc;
+      const display = document.getElementById('invTotalDisplay');
+      if (display) display.innerText = "Rs " + total.toFixed(2);
+    }
+
+    function calculateDebitTotal() {
+      const qty = parseFloat(document.getElementById('debQty').value) || 0;
+      const rate = parseFloat(document.getElementById('debRate').value) || 0;
+      const tax = parseFloat(document.getElementById('debTax').value) || 0;
+      const total = (qty * rate) + tax;
+      const amtEl = document.getElementById('debAmt');
+      if (amtEl) amtEl.value = total.toFixed(2);
+    }
+
+    function saveOrder() {
+      const custName = document.getElementById('invCustName').value.trim();
+      const prodName = document.getElementById('invProdName').value.trim();
+      if (!custName || !prodName) {
+        alert('Please fill in required fields (Customer Name & Product Name)');
+        return;
+      }
+      const qty = parseFloat(document.getElementById('invQty').value) || 1;
+      const rate = parseFloat(document.getElementById('invRate').value) || 0;
+      const taxPct = parseFloat(document.getElementById('invTaxPct').value) || 0;
+      const discount = parseFloat(document.getElementById('invDiscount').value) || 0;
+      const subtotal = qty * rate;
+      const taxAmt = (subtotal * taxPct) / 100;
+      const amount = (subtotal + taxAmt) - discount;
+      const newOrder = {
+        inv: document.getElementById('invNum').value.trim() || ('INV-' + Math.floor(10000 + Math.random() * 90000)),
+        date: document.getElementById('invDate').value || new Date().toISOString().split('T')[0],
+        custName: custName,
+        custNtnCnic: document.getElementById('invCustNtnCnic').value.trim(),
+        custAddress: document.getElementById('invCustAddress').value.trim(),
+        custProvince: document.getElementById('invCustProvince').value,
+        prodName: prodName,
+        hsCode: document.getElementById('invHsCode').value.trim() || '3004.90',
+        uom: document.getElementById('invUom').value,
+        qty: qty,
+        rate: rate,
+        taxPct: taxPct,
+        discount: discount,
+        amount: amount
+      };
+      if (!userData.orders) userData.orders = [];
+      userData.orders.unshift(newOrder);
+      logActivity(`Created Invoice ${newOrder.inv} for ${custName}`);
+      saveData();
+      renderAllData();
+      closeModal('orderModal');
+      document.getElementById('invNum').value = '';
+      document.getElementById('invCustName').value = '';
+      document.getElementById('invProdName').value = '';
+    }
+
+    function savePurchaseInvoice() {
+      const supplier = document.getElementById('pinvSupplier').value.trim();
+      const item = document.getElementById('pinvItem').value.trim();
+      if (!supplier || !item) {
+        alert('Please enter supplier and item name.');
+        return;
+      }
+      const qty = parseFloat(document.getElementById('pinvQty').value) || 1;
+      const rate = parseFloat(document.getElementById('pinvRate').value) || 0;
+      const totalAmt = qty * rate;
+      const newPInv = {
+        ref: document.getElementById('pinvNum').value.trim() || ('PINV-' + Math.floor(1000 + Math.random() * 9000)),
+        date: document.getElementById('pinvDate').value || new Date().toISOString().split('T')[0],
+        supplier: supplier,
+        item: item,
+        qty: qty,
+        rate: rate,
+        amt: totalAmt
+      };
+      if (!userData.purchaseinvoices) userData.purchaseinvoices = [];
+      userData.purchaseinvoices.unshift(newPInv);
+      logActivity(`Created Purchase Invoice ${newPInv.ref} from ${supplier}`);
+      saveData();
+      renderAllData();
+      closeModal('purchaseInvoiceModal');
+      document.getElementById('pinvNum').value = '';
+      document.getElementById('pinvSupplier').value = '';
+      document.getElementById('pinvItem').value = '';
+    }
+
+    function saveQuotation() {
+      const customer = document.getElementById('quoCustomer').value.trim();
+      const product = document.getElementById('quoProduct').value.trim();
+      if (!customer || !product) {
+        alert('Please enter customer and product name.');
+        return;
+      }
+      const newQ = {
+        customer: customer,
+        product: product,
+        rate: parseFloat(document.getElementById('quoRate').value) || 0,
+        discount: document.getElementById('quoDiscount').value.trim(),
+        date: document.getElementById('quoDate').value || new Date().toISOString().split('T')[0]
+      };
+      if (!userData.quotations) userData.quotations = [];
+      userData.quotations.unshift(newQ);
+      logActivity(`Generated Quotation for ${customer}`);
+      saveData();
+      renderAllData();
+      closeModal('quotationModal');
+      document.getElementById('quoCustomer').value = '';
+      document.getElementById('quoProduct').value = '';
+    }
+
+    function savePatient() {
+      const name = document.getElementById('patName').value.trim();
+      if (!name) {
+        alert('Please enter patient name.');
+        return;
+      }
+      const newP = {
+        name: name,
+        age: document.getElementById('patAge').value,
+        gender: document.getElementById('patGender').value,
+        contact: document.getElementById('patContact').value.trim(),
+        address: document.getElementById('patAddress').value.trim(),
+        doctor: document.getElementById('patDoctor').value.trim(),
+        service: document.getElementById('patService').value.trim(),
+        fee: parseFloat(document.getElementById('patFee').value) || 0,
+        status: document.getElementById('patStatus').value
+      };
+      if (!userData.patients) userData.patients = [];
+      userData.patients.unshift(newP);
+      logActivity(`Added Patient Record: ${name}`);
+      saveData();
+      renderAllData();
+      closeModal('patientModal');
+      document.getElementById('patName').value = '';
+    }
+
+    function saveDebitNote() {
+      const party = document.getElementById('debParty').value.trim();
+      const item = document.getElementById('debItem').value.trim();
+      if (!party || !item) {
+        alert('Please enter party name and returned item.');
+        return;
+      }
+      const qty = parseFloat(document.getElementById('debQty').value) || 1;
+      const rate = parseFloat(document.getElementById('debRate').value) || 0;
+      const tax = parseFloat(document.getElementById('debTax').value) || 0;
+      const newD = {
+        ref: document.getElementById('debNum').value.trim() || ('DN-' + Math.floor(1000 + Math.random() * 9000)),
+        date: document.getElementById('debDate').value || new Date().toISOString().split('T')[0],
+        party: party,
+        origInv: document.getElementById('debOrigInv').value.trim(),
+        item: item,
+        qty: qty,
+        rate: rate,
+        tax: tax,
+        amt: (qty * rate) + tax,
+        reason: document.getElementById('debReason').value
+      };
+      if (!userData.debitnotes) userData.debitnotes = [];
+      userData.debitnotes.unshift(newD);
+      logActivity(`Issued Debit Note ${newD.ref} for ${party}`);
+      saveData();
+      renderAllData();
+      closeModal('debitModal');
+      document.getElementById('debNum').value = '';
+      document.getElementById('debParty').value = '';
+      document.getElementById('debItem').value = '';
+    }
+
+    function saveItem() {
+      const name = document.getElementById('itemName').value.trim();
+      if (!name) {
+        alert('Please enter item name.');
+        return;
+      }
+      const newItem = {
+        name: name,
+        batch: document.getElementById('itemBatch').value.trim(),
+        stock: parseInt(document.getElementById('itemStock').value) || 0,
+        unit: document.getElementById('itemUnit').value,
+        expiry: document.getElementById('itemExpiry').value,
+        purchasePrice: parseFloat(document.getElementById('itemPurchasePrice').value) || 0,
+        salePrice: parseFloat(document.getElementById('itemSalePrice').value) || 0
+      };
+      if (!userData.inventory) userData.inventory = [];
+      userData.inventory.unshift(newItem);
+      logActivity(`Added Inventory Item: ${name}`);
+      saveData();
+      renderAllData();
+      closeModal('itemModal');
+      document.getElementById('itemName').value = '';
+    }
+
+    function saveCustomer() {
+      const name = document.getElementById('custName').value.trim();
+      if (!name) {
+        alert('Please enter customer/shop name.');
+        return;
+      }
+      const newC = {
+        name: name,
+        owner: document.getElementById('custOwner').value.trim(),
+        contact: document.getElementById('custContact').value.trim(),
+        category: document.getElementById('custCategory').value,
+        address: document.getElementById('custAddress').value.trim(),
+        ntnCnic: document.getElementById('custNtnCnic').value.trim(),
+        credit: parseFloat(document.getElementById('custCredit').value) || 0
+      };
+      if (!userData.customers) userData.customers = [];
+      userData.customers.unshift(newC);
+      logActivity(`Added Customer Profile: ${name}`);
+      saveData();
+      renderAllData();
+      closeModal('customerModal');
+      document.getElementById('custName').value = '';
+    }
+
+    function saveSupplier() {
+      const name = document.getElementById('supName').value.trim();
+      const contact = document.getElementById('supContact').value.trim();
+      if (!name || !contact) {
+        alert('Please enter supplier name and contact.');
+        return;
+      }
+      const newS = {
+        name: name,
+        contactPerson: document.getElementById('supContactPerson').value.trim(),
+        contact: contact,
+        email: document.getElementById('supEmail').value.trim(),
+        address: document.getElementById('supAddress').value.trim(),
+        ntnTax: document.getElementById('supNtnTax').value.trim(),
+        credit: parseFloat(document.getElementById('supCredit').value) || 0
+      };
+      if (!userData.suppliers) userData.suppliers = [];
+      userData.suppliers.unshift(newS);
+      logActivity(`Added Supplier: ${name}`);
+      saveData();
+      renderAllData();
+      closeModal('supplierModal');
+      document.getElementById('supName').value = '';
+    }
+
+    function savePurchase() {
+      const supplier = document.getElementById('purSupplier').value.trim();
+      const item = document.getElementById('purItem').value.trim();
+      if (!supplier || !item) {
+        alert('Please fill in supplier and item name.');
+        return;
+      }
+      const newP = {
+        ref: 'PO-' + Math.floor(1000 + Math.random() * 9000),
+        supplier: supplier,
+        item: item,
+        amt: parseFloat(document.getElementById('purAmt').value) || 0,
+        date: new Date().toISOString().split('T')[0]
+      };
+      if (!userData.purchases) userData.purchases = [];
+      userData.purchases.unshift(newP);
+      logActivity(`Recorded Purchase Order from ${supplier}`);
+      saveData();
+      renderAllData();
+      closeModal('purchaseModal');
+      document.getElementById('purSupplier').value = '';
+      document.getElementById('purItem').value = '';
+    }
+
+    function savePayout() {
+      const recipient = document.getElementById('payoutRecipient').value.trim();
+      if (!recipient) {
+        alert('Please enter recipient name.');
+        return;
+      }
+      const newPay = {
+        voucher: 'PV-' + Math.floor(1000 + Math.random() * 9000),
+        recipient: recipient,
+        mode: document.getElementById('payoutMode').value,
+        amount: parseFloat(document.getElementById('payoutAmt').value) || 0,
+        date: new Date().toISOString().split('T')[0]
+      };
+      if (!userData.payouts) userData.payouts = [];
+      userData.payouts.unshift(newPay);
+      logActivity(`Disbursed Payout Voucher to ${recipient}`);
+      saveData();
+      renderAllData();
+      closeModal('payoutModal');
+      document.getElementById('payoutRecipient').value = '';
+    }
+
+    function deleteRecord(collection, index) {
+      if (currentUserRole !== 'Admin') {
+        alert('Access denied: Staff Manager role cannot delete records.');
+        return;
+      }
+      if (confirm('Are you sure you want to delete this record?')) {
+        if (userData[collection]) {
+          userData[collection].splice(index, 1);
+          saveData();
+          renderAllData();
+        }
+      }
+    }
+
+    function getDeleteBtnHtml(collection, index) {
+      if (currentUserRole !== 'Admin') return '';
+      return `<button type="button" onclick="deleteRecord('${collection}', ${index})" class="px-2 py-0.5 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded font-bold transition text-[10px]" title="Delete"><i class="fa-solid fa-trash"></i></button>`;
+    }
+
+    function printUniversalSlip(title, dataObj, autoClose = false) {
+      let html = `<html><head><title>${title}</title><style>body{font-family:sans-serif;font-size:12px;padding:20px;color:#333;}h2{text-align:center;border-bottom:2px solid #333;padding-bottom:10px;margin-bottom:20px;}table{width:100%;border-collapse:collapse;}td{padding:8px;border-bottom:1px solid #ddd;}td.label{font-weight:bold;width:40%;}</style></head><body>`;
+      html += `<h2>${title}</h2><table>`;
+      for (let key in dataObj) {
+        html += `<tr><td class="label">${key}:</td><td>${dataObj[key]}</td></tr>`;
+      }
+      html += `</table><script>window.print();${autoClose ? 'window.close();' : ''}<\/script></body></html>`;
+      const w = window.open('', '_blank');
+      w.document.write(html);
+      w.document.close();
+    }
+
+    function autoReorderStock(itemName) {
+      alert(`Auto Reorder Purchase Order generated successfully for low stock item: ${itemName}`);
+    }
+
+    function updateSalesChart(totalRev) {
+      const ctx = document.getElementById('salesChart');
+      if (!ctx) return;
+      if (salesChartInstance) salesChartInstance.destroy();
+      salesChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Week 1', 'Week 2', 'Week 3', 'Current'],
+          datasets: [{
+            label: 'Sales Revenue (Rs)',
+            data: [totalRev * 0.2, totalRev * 0.4, totalRev * 0.7, totalRev],
+            borderColor: '#f97316',
+            backgroundColor: 'rgba(249, 115, 22, 0.1)',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    }
+
+    function updatePayoutChart(totalPayout) {
+      const ctx = document.getElementById('payoutChart');
+      if (!ctx) return;
+      if (payoutChartInstance) payoutChartInstance.destroy();
+      payoutChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Week 1', 'Week 2', 'Week 3', 'Current'],
+          datasets: [{
+            label: 'Payouts (Rs)',
+            data: [totalPayout * 0.2, totalPayout * 0.5, totalPayout * 0.8, totalPayout],
+            backgroundColor: '#e11d48'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    }
+
+    function updateReportsChart(totalRev, totalPurchases) {
+      const ctx = document.getElementById('reportsChart');
+      if (!ctx) return;
+      if (reportsChartInstance) reportsChartInstance.destroy();
+      reportsChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Sales Revenue', 'Total Purchases'],
+          datasets: [{
+            label: 'Amount (Rs)',
+            data: [totalRev, totalPurchases],
+            backgroundColor: ['#10b981', '#3b82f6']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    }
+
+    function updateDailyCharts(dailySales, dailyPurchases) {
+      const ctx1 = document.getElementById('dailySalesChart');
+      if (ctx1) {
+        if (dailySalesChartInstance) dailySalesChartInstance.destroy();
+        dailySalesChartInstance = new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Today'],
+            datasets: [{
+              label: 'Sales Revenue (Rs)',
+              data: [dailySales * 0.1, dailySales * 0.3, dailySales * 0.5, dailySales * 0.6, dailySales * 0.8, dailySales * 0.9, dailySales],
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              fill: true,
+              tension: 0.3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+      }
+      const ctx2 = document.getElementById('dailyPurchasesChart');
+      if (ctx2) {
+        if (dailyPurchasesChartInstance) dailyPurchasesChartInstance.destroy();
+        dailyPurchasesChartInstance = new Chart(ctx2, {
+          type: 'bar',
+          data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Today'],
+            datasets: [{
+              label: 'Purchase Expenses (Rs)',
+              data: [dailyPurchases * 0.2, dailyPurchases * 0.4, dailyPurchases * 0.5, dailyPurchases * 0.7, dailyPurchases * 0.8, dailyPurchases * 0.85, dailyPurchases],
+              backgroundColor: '#3b82f6'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+      }
+    }
+
+    function renderAllData() {
+      const totalRev = (userData.orders || []).reduce((s, o) => s + (o.amount || 0), 0);
+      const totalPayout = (userData.payouts || []).reduce((s, p) => s + (p.amount || 0), 0);
+      const poTotal = (userData.purchases || []).reduce((s, p) => s + (p.amt || 0), 0);
+      const pinvTotal = (userData.purchaseinvoices || []).reduce((s, p) => s + (p.amt || 0), 0);
+      const totalPurchases = poTotal + pinvTotal;
+      const dailySales = totalRev;
+      const dailyPurchases = totalPurchases;
+      const totalNetRev = dailySales + dailyPurchases;
+      const sDaily = document.getElementById('stat-dailysales');
+      const sStock = document.getElementById('stat-stock');
+      const sCust = document.getElementById('stat-customers');
+      const sPay = document.getElementById('stat-payout');
+      if (sDaily) sDaily.innerText = "Rs " + totalRev.toLocaleString();
+      if (sStock) sStock.innerText = (userData.inventory || []).length + " Items";
+      if (sCust) sCust.innerText = (userData.customers || []).length + " Clients";
+      if (sPay) sPay.innerText = "Rs " + totalPayout.toLocaleString();
+      const dsEl = document.getElementById('dailySaleRevDisplay');
+      const dpEl = document.getElementById('dailyPurchaseExpDisplay');
+      const dtEl = document.getElementById('dailyTotalRevDisplay');
+      if (dsEl) dsEl.innerText = "Rs " + dailySales.toLocaleString();
+      if (dpEl) dpEl.innerText = "Rs " + dailyPurchases.toLocaleString();
+      if (dtEl) dtEl.innerText = "Rs " + totalNetRev.toLocaleString();
+      const lowStockItems = (userData.inventory || []).filter(item => item.stock <= 5);
+      const lowStockBanner = document.getElementById('lowStockBanner');
+      if (lowStockBanner) {
+        if (lowStockItems.length > 0) {
+          lowStockBanner.classList.remove('hidden');
+          document.getElementById('lowStockText').innerText = `Attention: ${lowStockItems.length} item(s) in stock have low quantity (<= 5 remaining)!`;
+        } else {
+          lowStockBanner.classList.add('hidden');
+        }
+      }
+      const today = new Date();
+      const nearExpiryItems = (userData.inventory || []).filter(item => {
+        if (!item.expiry || item.expiry === 'N/A') return false;
+        const expDate = new Date(item.expiry);
+        const diffDays = (expDate - today) / (1000 * 60 * 60 * 24);
+        return diffDays <= 60;
+      });
+      const expiryBanner = document.getElementById('expiryBanner');
+      if (expiryBanner) {
+        if (nearExpiryItems.length > 0) {
+          expiryBanner.classList.remove('hidden');
+          document.getElementById('expiryText').innerText = `Warning: ${nearExpiryItems.length} item(s) are near expiry (within 60 days)! Check stock.`;
+        } else {
+          expiryBanner.classList.add('hidden');
+        }
+      }
+      updateSalesChart(totalRev);
+      updatePayoutChart(totalPayout);
+      updateReportsChart(totalRev, totalPurchases);
+      updateDailyCharts(dailySales, dailyPurchases);
+      // Render Orders Table
+      const ordersTBody = document.getElementById('ordersTableBody');
+      if (ordersTBody) {
+        ordersTBody.innerHTML = (userData.orders || []).map((o, i) => `
+          <tr class="border-b hover:bg-slate-50">
+            <td class="p-2 font-bold text-orange-600 font-mono">${o.inv || 'N/A'}</td>
+            <td class="p-2 font-semibold text-slate-600">${o.date || 'N/A'}</td>
+            <td class="p-2">
+              <div class="font-bold text-slate-800">${o.custName || 'Guest Client'}</div>
+              <div class="text-[9px] text-slate-500">NTN/CNIC: ${o.custNtnCnic || 'N/A'} (${o.custProvince || 'N/A'})</div>
+            </td>
+            <td class="p-2">
+              <div class="font-bold text-slate-700">${o.prodName || 'Item'}</div>
+              <div class="text-[9px] font-mono text-slate-500">HS Code: ${o.hsCode || '3004.90'}</div>
+            </td>
+            <td class="p-2">
+              <div class="font-bold text-slate-800">${o.qty || 1} ${o.uom || 'Units'}</div>
+              <div class="text-[9px] text-slate-500">@ Rs ${o.rate || 0}/unit</div>
+            </td>
+            <td class="p-2">
+              <div class="text-[10px] font-bold text-emerald-600">GST: ${o.taxPct || 0}%</div>
+              <div class="text-[9px] text-rose-500">Disc: Rs ${o.discount || 0}</div>
+            </td>
+            <td class="p-2 font-black text-slate-900">Rs ${parseFloat(o.amount || 0).toFixed(2)}</td>
+            <td class="p-2 text-right space-x-1 whitespace-nowrap">
+              <button type="button" onclick='printUniversalSlip("TAX INVOICE", {
+                "Invoice #": "${o.inv}", "Date": "${o.date}", "Customer": "${o.custName}",
+                "NTN/CNIC": "${o.custNtnCnic || 'N/A'}", "Province": "${o.custProvince || 'N/A'}",
+                "Product": "${o.prodName}", "HS Code": "${o.hsCode || '3004.90'}",
+                "Quantity": "${o.qty} ${o.uom}", "Rate": "Rs ${o.rate}", "GST Tax": "${o.taxPct}%",
+                "Discount": "Rs ${o.discount}", "Total Amount": "Rs ${parseFloat(o.amount).toFixed(2)}"
+              }, false)' class="px-2 py-0.5 bg-orange-50 text-orange-600 hover:bg-orange-500 hover:text-white rounded font-bold transition text-[10px]"><i class="fa-solid fa-print"></i> Print</button>
+              ${getDeleteBtnHtml('orders', i)}
+            </td>
+          </tr>
+        `).join('') || `<tr><td colspan="8" class="p-4 text-center text-slate-400">No invoices or sales records found.</td></tr>`;
+      }
+      // Render Purchase Invoices Table
+      const pinvTBody = document.getElementById('purchaseInvoicesTableBody');
+      if (pinvTBody) {
+        pinvTBody.innerHTML = (userData.purchaseinvoices || []).map((pi, i) => `
+          <tr class="border-b hover:bg-slate-50">
+            <td class="p-2 font-bold text-emerald-600 font-mono">${pi.ref}</td>
+            <td class="p-2 font-semibold text-slate-600">${pi.date}</td>
+            <td class="p-2 font-bold text-slate-800">${pi.supplier}</td>
+            <td class="p-2 font-semibold text-slate-700">${pi.item}</td>
+            <td class="p-2 text-slate-600">${pi.qty} Pcs @ Rs ${pi.rate}</td>
+            <td class="p-2 font-black text-slate-900">Rs ${parseFloat(pi.amt || 0).toFixed(2)}</td>
+            <td class="p-2 text-right space-x-1 whitespace-nowrap">
+              <button type="button" onclick='printUniversalSlip("PURCHASE INVOICE SLIP", {
+                "Purchase Invoice #": "${pi.ref}", "Date": "${pi.date}", "Supplier Name": "${pi.supplier}",
+                "Item Purchased": "${pi.item}", "Quantity": "${pi.qty}", "Purchase Rate": "Rs ${pi.rate}",
+                "Total Amount": "Rs ${parseFloat(pi.amt).toFixed(2)}"
+              }, false)' class="px-2 py-0.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded font-bold transition text-[10px]"><i class="fa-solid fa-print"></i> Print</button>
+              ${getDeleteBtnHtml('purchaseinvoices', i)}
+            </td>
+          </tr>
+        `).join('') || `<tr><td colspan="7" class="p-4 text-center text-slate-400">No purchase invoices found.</td></tr>`;
+      }
+      // Render Quotations Table
+      const quoTBody = document.getElementById('quotationsTableBody');
+      if (quoTBody) {
+        quoTBody.innerHTML = (userData.quotations || []).map((q, i) => `
+          <tr class="border-b hover:bg-slate-50">
+            <td class="p-2 font-bold text-slate-800">${q.customer || 'N/A'}</td>
+            <td class="p-2 font-bold text-slate-700">${q.product || 'N/A'}</td>
+            <td class="p-2 font-bold text-emerald-600">Rs ${q.rate || 0}</td>
+            <td class="p-2 font-semibold text-slate-600">${q.discount || 'N/A'}</td>
+            <td class="p-2 font-semibold text-slate-600">${q.date || 'N/A'}</td>
+            <td class="p-2 text-right space-x-1 whitespace-nowrap">
+              <button type="button" onclick='printUniversalSlip("QUOTATION SLIP", {
+                "Customer/Shop Name": "${q.customer}", "Product/Item Name": "${q.product}",
+                "Rate/Price": "Rs ${q.rate}", "Discount/Scheme": "${q.discount}", "Date": "${q.date}"
+              }, false)' class="px-2 py-0.5 bg-orange-50 text-orange-600 hover:bg-orange-500 hover:text-white rounded font-bold transition text-[10px]"><i class="fa-solid fa-print"></i> Print</button>
+              ${getDeleteBtnHtml('quotations', i)}
+            </td>
+          </tr>
+        `).join('') || `<tr><td colspan="6" class="p-4 text-center text-slate-400">No quotations found.</td></tr>`;
+      }
+      // Render Patients Table
+      const patTBody = document.getElementById('patientsTableBody');
+      if (patTBody) {
+        patTBody.innerHTML = (userData.patients || []).map((p, i) => {
+          const isPaid = p.status === 'Paid';
+          const statusBadge = isPaid ?
+            '<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold text-[9px]">Paid</span>' :
+            '<span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold text-[9px]">Pending</span>';
+          return `
+            <tr class="border-b hover:bg-slate-50">
+              <td class="p-2">
+                <div class="font-bold text-slate-800">${p.name}</div>
+                <div class="text-[9px] text-slate-500">Age: ${p.age || 'N/A'} yrs | Ph: ${p.contact || 'N/A'}</div>
+              </td>
+              <td class="p-2">
+                <div class="font-semibold text-slate-700">${p.gender}</div>
+                <div class="text-[9px] text-slate-500">${p.address || 'N/A'}</div>
+              </td>
+              <td class="p-2 font-semibold text-slate-700">${p.doctor}</td>
+              <td class="p-2 text-slate-600">${p.service}</td>
+              <td class="p-2">
+                <div class="font-bold text-slate-900">Rs ${p.fee || 0}</div>
+                <div class="mt-0.5">${statusBadge}</div>
+              </td>
+              <td class="p-2 text-right space-x-1 whitespace-nowrap">
+                <button type="button" onclick='printUniversalSlip("PATIENT SLIP", {
+                  "Patient Name": "${p.name}", "Age / Gender": "${p.age} yrs / ${p.gender}",
+                  "Contact": "${p.contact}", "Home Address": "${p.address}",
+                  "Doctor / Hospital": "${p.doctor}", "Service Used": "${p.service}",
+                  "Fee Amount": "Rs ${p.fee}", "Status": "${p.status}"
+                }, false)' class="px-2 py-0.5 bg-orange-50 text-orange-600 hover:bg-orange-500 hover:text-white rounded font-bold transition text-[10px]"><i class="fa-solid fa-print"></i> Print</button>
+                ${getDeleteBtnHtml('patients', i)}
+              </td>
+            </tr>
+          `;
+        }).join('') || `<tr><td colspan="6" class="p-4 text-center text-slate-400">No patient records found.</td></tr>`;
+      }
+      // Render Debit Notes Table
+      const debTBody = document.getElementById('debitTableBody');
+      if (debTBody) {
+        debTBody.innerHTML = (userData.debitnotes || []).map((d, i) => `
+          <tr class="border-b hover:bg-slate-50">
+            <td class="p-2">
+              <div class="font-bold text-rose-600 font-mono">${d.ref}</div>
+              <div class="text-[9px] text-slate-500">${d.date}</div>
+            </td>
+            <td class="p-2 font-bold text-slate-800">${d.party}</td>
+            <td class="p-2 font-mono text-slate-600">${d.origInv || 'N/A'}</td>
+            <td class="p-2">
+              <div class="font-bold text-slate-700">${d.item}</div>
+              <div class="text-[9px] text-slate-500">${d.qty} Pcs @ Rs ${d.rate}</div>
+            </td>
+            <td class="p-2"><span class="bg-slate-100 text-slate-700 font-bold px-1.5 py-0.5 rounded text-[9px]">${d.reason}</span></td>
+            <td class="p-2">
+              <div class="font-black text-slate-900">Rs ${parseFloat(d.amt || 0).toFixed(2)}</div>
+              <div class="text-[9px] text-emerald-600">Tax/GST: Rs ${d.tax || 0}</div>
+            </td>
+            <td class="p-2 text-right space-x-1 whitespace-nowrap">
+              <button type="button" onclick='printUniversalSlip("DEBIT NOTE / RETURN SLIP", {
+                "Debit Note #": "${d.ref}", "Date": "${d.date}", "Party / Vendor Name": "${d.party}",
+                "Original Invoice Ref": "${d.origInv}", "Item Returned": "${d.item}",
+                "Return Quantity": "${d.qty}", "Rate / Price": "Rs ${d.rate}",
+                "Tax / GST Amount": "Rs ${d.tax}", "Total Amount": "Rs ${parseFloat(d.amt).toFixed(2)}",
+                "Reason for Return": "${d.reason}"
+              }, false)' class="px-2 py-0.5 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded font-bold transition text-[10px]"><i class="fa-solid fa-print"></i> Print</button>
+              ${getDeleteBtnHtml('debitnotes', i)}
+            </td>
+          </tr>
+        `).join('') || `<tr><td colspan="7" class="p-4 text-center text-slate-400">No debit notes or returns found.</td></tr>`;
+      }
+      // Render Inventory Table
+      const invTBody = document.getElementById('inventoryTableBody');
+      if (invTBody) {
+        invTBody.innerHTML = (userData.inventory || []).map((item, i) => {
+          const isLow = item.stock <= 5;
+          return `
+            <tr class="border-b hover:bg-slate-50 ${isLow ? 'bg-rose-50/40' : ''}">
+              <td class="p-2 font-bold text-slate-800">${item.name}</td>
+              <td class="p-2 font-mono text-slate-600">${item.batch || 'N/A'}</td>
+              <td class="p-2 font-bold ${isLow ? 'text-rose-600' : 'text-slate-800'}">${item.stock}</td>
+              <td class="p-2"><span class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded text-[9px] font-bold">${item.unit || 'Pcs'}</span></td>
+              <td class="p-2 font-bold text-slate-700">${item.expiry || 'N/A'}</td>
+              <td class="p-2 font-bold text-slate-600">Rs ${item.purchasePrice || 0}</td>
+              <td class="p-2 font-bold text-emerald-600">Rs ${item.salePrice || 0}</td>
+              <td class="p-2 text-right space-x-1 whitespace-nowrap">
+                <button type="button" onclick='printUniversalSlip("STOCK ITEM SLIP", {
+                  "Product Name":"${item.name}", "Batch #":"${item.batch || 'N/A'}", 
+                  "Stock Quantity":"${item.stock} ${item.unit || 'Pcs'}", "Expiry Date":"${item.expiry || 'N/A'}", 
+                  "Purchase Price":"Rs ${item.purchasePrice || 0}", "Sale Price":"Rs ${item.salePrice || 0}"
+                }, false)' class="px-1.5 py-0.5 bg-amber-50 text-amber-700 hover:bg-amber-500 hover:text-white rounded font-bold transition text-[10px]"><i class="fa-solid fa-print"></i></button>
+                ${isLow ? `<button type="button" onclick="autoReorderStock('${item.name}')" class="px-1.5 py-0.5 bg-emerald-600 text-white rounded font-bold hover:bg-emerald-700 transition text-[10px]" title="Auto Reorder PO"><i class="fa-solid fa-cart-plus"></i> Order</button>` : ''}
+                ${getDeleteBtnHtml('inventory', i)}
+              </td>
+            </tr>
+          `;
+        }).join('') || `<tr><td colspan="8" class="p-4 text-center text-slate-400">No inventory products found.</td></tr>`;
+      }
+      // Render Customers Table
+      const custTBody = document.getElementById('customerTableBody');
+      if (custTBody) {
+        custTBody.innerHTML = (userData.customers || []).map((c, i) => {
+          let categoryBadge = '<span class="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-[9px] font-bold">Retailer</span>';
+          if (c.category === 'Wholesaler') {
+            categoryBadge = '<span class="bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded text-[9px] font-bold">Wholesaler</span>';
+          } else if (c.category === 'Corporate') {
+            categoryBadge = '<span class="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded text-[9px] font-bold">Corporate</span>';
+          }
+          return `
+            <tr class="border-b hover:bg-slate-50">
+              <td class="p-2">
+                <div class="font-bold text-slate-800">${c.name}</div>
+                <div class="text-[9px] text-slate-500">Owner: ${c.owner || 'N/A'}</div>
+              </td>
+              <td class="p-2">
+                <div class="font-semibold text-slate-700">${c.contact}</div>
+                <div class="mt-0.5">${categoryBadge}</div>
+              </td>
+              <td class="p-2 font-semibold text-slate-600">${c.address || 'N/A'}</td>
+              <td class="p-2 font-mono text-slate-600">${c.ntnCnic || 'N/A'}</td>
+              <td class="p-2 font-black text-rose-600">Rs ${c.credit || 0}</td>
+              <td class="p-2 text-right space-x-1 whitespace-nowrap">
+                <button type="button" onclick='printUniversalSlip("CUSTOMER LEDGER / ACCOUNT", {
+                  "Shop Name": "${c.name}", "Owner Name": "${c.owner || 'N/A'}", "Contact": "${c.contact}", 
+                  "Category": "${c.category || 'Retailer'}", "Address / Route": "${c.address || 'N/A'}", 
+                  "NTN / CNIC": "${c.ntnCnic || 'N/A'}", "Opening Balance": "Rs ${c.credit || 0}"
+                }, false)' class="px-2 py-0.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded font-bold transition text-[10px]"><i class="fa-solid fa-print"></i> Print</button>
+                ${getDeleteBtnHtml('customers', i)}
+              </td>
+            </tr>
+          `;
+        }).join('') || `<tr><td colspan="6" class="p-4 text-center text-slate-400">No customers found.</td></tr>`;
+      }
+      // Render Suppliers Table
+      const supTBody = document.getElementById('supplierTableBody');
+      if (supTBody) {
+        supTBody.innerHTML = (userData.suppliers || []).map((s, i) => `
+          <tr class="border-b hover:bg-slate-50">
+            <td class="p-2">
+              <div class="font-bold text-slate-800">${s.name}</div>
+              <div class="text-[9px] text-slate-500">Contact Person: ${s.contactPerson || 'N/A'}</div>
+            </td>
+            <td class="p-2">
+              <div class="font-semibold text-slate-700">${s.contact}</div>
+              <div class="text-[9px] text-slate-500">${s.email || 'N/A'}</div>
+            </td>
+            <td class="p-2 font-semibold text-slate-600">${s.address || 'N/A'}</td>
+            <td class="p-2 font-mono text-slate-600">${s.ntnTax || 'N/A'}</td>
+            <td class="p-2 font-black text-rose-600">Rs ${s.credit || 0}</td>
+            <td class="p-2 text-right space-x-1 whitespace-nowrap">
+              <button type="button" onclick='printUniversalSlip("SUPPLIER ACCOUNT SLIP", {
+                "Supplier / Company Name": "${s.name}", "Contact Person": "${s.contactPerson || 'N/A'}", 
+                "Phone Number": "${s.contact}", "Email Address": "${s.email || 'N/A'}", 
+                "Address / Location": "${s.address || 'N/A'}", "NTN / Sales Tax": "${s.ntnTax || 'N/A'}", 
+                "Opening Balance": "Rs ${s.credit || 0}"
+              }, false)' class="px-2 py-0.5 bg-cyan-50 text-cyan-700 hover:bg-cyan-600 hover:text-white rounded font-bold transition text-[10px]"><i class="fa-solid fa-print"></i> Print</button>
+              ${getDeleteBtnHtml('suppliers', i)}
+            </td>
+          </tr>
+        `).join('') || `<tr><td colspan="6" class="p-4 text-center text-slate-400">No suppliers found.</td></tr>`;
+      }
+      // Render Purchases Table
+      const purTBody = document.getElementById('purchasesTableBody');
+      if (purTBody) {
+        purTBody.innerHTML = (userData.purchases || []).map((p, i) => `
+          <tr class="border-b hover:bg-slate-50">
+            <td class="p-2 font-bold text-emerald-600 font-mono">${p.ref}</td>
+            <td class="p-2 font-bold">${p.supplier}</td>
+            <td class="p-2">${p.item}</td>
+            <td class="p-2 font-bold">Rs ${p.amt}</td>
+            <td class="p-2 text-right space-x-1">
+              <button type="button" onclick='printUniversalSlip("PURCHASE BILL SLIP", {"Ref #":"${p.ref}", "Supplier":"${p.supplier}", "Item":"${p.item}", "Amount":"Rs ${p.amt}", "Date":"${p.date}"}, false)' class="px-2 py-0.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded font-bold transition text-[10px]"><i class="fa-solid fa-print"></i> Slip</button>
+              ${getDeleteBtnHtml('purchases', i)}
+            </td>
+          </tr>
+        `).join('') || `<tr><td colspan="5" class="p-4 text-center text-slate-400">No purchase records found.</td></tr>`;
+      }
+      // Render Payouts Table
+      const payTBody = document.getElementById('payoutsTableBody');
+      if (payTBody) {
+        payTBody.innerHTML = (userData.payouts || []).map((p, i) => `
+          <tr class="border-b hover:bg-slate-50">
+            <td class="p-2 font-bold text-purple-600 font-mono">${p.voucher}</td>
+            <td class="p-2 font-bold">${p.recipient}</td>
+            <td class="p-2"><span class="bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold text-[9px]">${p.mode}</span></td>
+            <td class="p-2 font-bold">Rs ${p.amount}</td>
+            <td class="p-2 text-right space-x-1">
+              <button type="button" onclick='printUniversalSlip("PAYMENT OUT SLIP", {"Voucher #":"${p.voucher}", "Recipient":"${p.recipient}", "Mode":"${p.mode}", "Amount":"Rs ${p.amount}", "Date":"${p.date}"}, false)' class="px-2 py-0.5 bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white rounded font-bold transition text-[10px]"><i class="fa-solid fa-print"></i> Slip</button>
+              ${getDeleteBtnHtml('payouts', i)}
+            </td>
+          </tr>
+        `).join('') || `<tr><td colspan="5" class="p-4 text-center text-slate-400">No payout vouchers found.</td></tr>`;
+      }
+      // Render Activity Tracking Feed
+      const trackingTBody = document.getElementById('trackingTableBody');
+      if (trackingTBody) {
+        trackingTBody.innerHTML = (userData.activities || []).map(act => `
+          <tr class="border-b hover:bg-slate-50">
+            <td class="p-2 font-mono text-slate-500">${act.date}</td>
+            <td class="p-2 font-semibold text-slate-700">${act.desc}</td>
+          </tr>
+        `).join('') || `<tr><td colspan="2" class="p-4 text-center text-slate-400">No activity recorded yet.</td></tr>`;
+      }
+    }
+  </script>
+</body>
+
+</html>
