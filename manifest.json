@@ -8,7 +8,7 @@
   "description": "PayVibes web and desktop application",
   "icons": [
     {
-      "src": "https://payvibes.edgeone.dev",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
       "sizes": "512x512",
       "type": "image/png"
     }
