@@ -8,7 +8,7 @@
   "description": "PayVibes web and desktop application",
   "icons": [
     {
-      "src": "https://payvibes.online/download.png",
+      "src": "https://payvibes.online/icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
