@@ -9,7 +9,7 @@
   "icons": [
     {
       "src": "https://payvibes.online/logo.png",
-      "sizes": "600x480",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
